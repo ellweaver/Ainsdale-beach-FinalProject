@@ -1,0 +1,25 @@
+- Git Repo
+- AWS Account
+- CI/CD
+	- GitHub Actions?
+	 - makefile
+- Docstrings
+	- file structure
+- terraform
+	- backend
+		- state file must be kept separately from rest of infrastructure
+	- lambda
+		- contain pythons app
+		- etc
+- gitignore
+	- state.tf
+	- .env
+	- venv
+	- pycache
+	- look at previous ignore files
+- requirements.txt
+- readme.me
+- daily housekeeping:
+	- note taking, to form basis of documentation
+- Monitoring and Performance
+	- cloudwatch
