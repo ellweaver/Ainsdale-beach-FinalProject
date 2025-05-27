@@ -26,7 +26,7 @@ jobs:
 
   deploy-aws:
     if: false  #this will cause the job to be skipped - delete to enable
-    name: deploy-lambda
+    name: deploy-aws
     needs: run-tests
     environment: dev 
     runs-on: ubuntu-latest
