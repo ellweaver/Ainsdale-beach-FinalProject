@@ -1,0 +1,7 @@
+pytest
+pytest--testdox
+black
+bandit
+boto3
+moto
+coverage
