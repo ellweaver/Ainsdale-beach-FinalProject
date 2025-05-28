@@ -5,3 +5,7 @@ bandit
 boto3
 moto
 coverage
+pandas
+pyarrow
+pg8000
+
