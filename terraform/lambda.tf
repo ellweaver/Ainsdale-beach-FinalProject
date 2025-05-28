@@ -54,3 +54,24 @@ resource "aws_s3_object" "utils_file_upload" {
   source = data.archive_file.utils_py.output_path
   etag = filemd5( data.archive_file.utils_py.output_path)
 }
+
+resource "aws_lambda_function" "extract_lambda" {
+  function_name = "extract_lambda_function"
+  runtime = "python3.11"
+  role = aws_iam_role.extract_lambda_role.arn
+  handler = "extract.lambda_handler"
+
+  s3_bucket = var.python_bucket_name
+  s3_key = aws_s3_object.extract_file_upload.key
+
+  timeout = 60
+  publish = true
+  #may need to have enviroment vars for db credentials
+  # environment {
+  #   variables = {
+  #     SECRET_NAME = "toteys_db_credentials"
+  #   }
+  # }
+}
+
+
