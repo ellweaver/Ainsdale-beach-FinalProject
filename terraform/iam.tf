@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "s3_data_policy_doc" {
 
     resources = [
       #need extraction bucket to do this part,
-      "${aws_s3_bucket.data_bucket.arn}/*"
+      # need extraction bucket to do this part also,
     ]
 
   }
