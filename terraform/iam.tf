@@ -21,12 +21,16 @@ data "aws_iam_policy_document" "s3_data_policy_doc" {
 
     effect = "Allow"
 
-    actions = ["s3:PutObject"]
+    actions = [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListBucket"
+    ]
       
 
     resources = [
-      #need extraction bucket to do this part,
-      # need extraction bucket to do this part also,
+        "${aws_s3_bucket.ingestion_bucket.arn}",
+        "${aws_s3_bucket.ingestion_bucket.arn}/*"
     ]
 
   }
@@ -42,7 +46,7 @@ resource "aws_iam_role_policy_attachment" "lambda_s3_write_policy_attachment" {
     policy_arn = aws_iam_policy.s3_write_policy.arn
 }
 
-data "aws_iam_policy_document" "exract_lambda_logs_policy" {
+data "aws_iam_policy_document" "extract_lambda_logs_policy" {
     statement {
         effect = "Allow"
 
@@ -58,10 +62,13 @@ data "aws_iam_policy_document" "exract_lambda_logs_policy" {
 
 resource "aws_iam_policy" "extract_logging_policy"{
     name = "extract-lambda_logs_policy"
-    policy = data.aws_iam_policy_document.exract_lambda_logs_policy.json
+    policy = data.aws_iam_policy_document.extract_lambda_logs_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "extract_lambda_logs_policy_attachment" {
     role = aws_iam_role.extract_lambda_role.name
     policy_arn = aws_iam_policy.extract_logging_policy.arn
 }
+
+
+
