@@ -14,7 +14,7 @@ class TestExtractData:
     @pytest.mark.it('test extract data uploads succesfully to s3')
     def test_extract_data_uploads_succesfully_to_s3(self,test_client):
         response = extract_data(test_client)
-        assert response == {'result':'SUCCESS', 'message':'upload successful'}
+        assert response == {'status':"Success","code":200}
     
     
     @pytest.mark.skip
