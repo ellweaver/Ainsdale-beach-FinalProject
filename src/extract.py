@@ -33,16 +33,14 @@ def extract_data(client):
     conn = connect_to_db()
     time_now = datetime.now()
 
-    def transformer_func(table_name_list):
-        for table in table_name_list:
-            df = pd.read_sql("SELECT * FROM " + table, conn)
-            pyarrow_table = pa.Table.from_pandas(df)
-            pq.write_table(pyarrow_table, f'data/{table}{time_now}.parquet')
+   
+    for table in table_name_list:
+        df = pd.read_sql("SELECT * FROM " + table, conn)
+        pyarrow_table = pa.Table.from_pandas(df)
+        pq.write_table(pyarrow_table, f'data/{time_now}{table}.parquet')
+        #creates each parquet file in data directory
 
-
-    transformer_func(table_name_list) #creates each parquet file in data directory
-    shutil.make_archive(f'data/{time_now}parquet', 'zip', r'data') # zips data directory
-
+  
 
 extract_data(client)
 
