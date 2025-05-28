@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_event_rule" "extract_lambda_schedule" {
     name = "run-extract-lambda-func-every-10-mins"
     schedule_expression = "rate(10 minutes)"
-    description = "Sechudler for running the extract lamdba fucntion every ten minutes"
+    description = "Scheduler for running the extract lamdba function every ten minutes"
 }
 
 resource "aws_cloudwatch_event_target" "extract_lambda_scheduler_target" {
