@@ -24,7 +24,7 @@ EOF
 resource "aws_sns_topic_policy" "sns_extract_policy" {
   arn = aws_sns_topic.sns_extract.arn
 
-  policy = data.aws_iam_policy_document.sns_topic_policy.json
+  policy = data.aws_iam_policy_document.sns_extract_topic_policy.json
 }
 
 data "aws_iam_policy_document" "sns_extract_topic_policy" {
