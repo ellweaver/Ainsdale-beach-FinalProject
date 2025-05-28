@@ -18,3 +18,12 @@ def test_s3():
     """creates secretsmanager client for moto"""
     with mock_aws():
          yield boto3.client("s3")
+
+@pytest.fixture(scope='class')
+def test_bucket(test_s3):
+    """Creates mock_bucket for client"""
+    test_s3.create_bucket(Bucket="test_bucket",CreateBucketConfiguration={'LocationConstraint': "eu-west-2",
+        'Location': {
+            'Type': 'AvailabilityZone',
+            'Name': 'string'}
+            })
