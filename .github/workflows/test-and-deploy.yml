@@ -7,7 +7,7 @@ on:
 
 jobs:
   run-tests:
-    #if: false  this will cause the job to be skipped - delete to enable
+    if: true
     name: run-tests
     runs-on: ubuntu-latest
     steps:
@@ -25,7 +25,7 @@ jobs:
         run: make run-checks
 
   deploy-aws:
-    if: false  #this will cause the job to be skipped - delete to enable
+    if: false
     name: deploy-aws
     needs: run-tests
     environment: dev 
