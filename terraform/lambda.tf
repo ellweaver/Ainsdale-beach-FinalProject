@@ -66,12 +66,12 @@ resource "aws_lambda_function" "extract_lambda" {
 
   timeout = 60
   publish = true
-  #may need to have enviroment vars for db credentials
-  # environment {
-  #   variables = {
-  #     SECRET_NAME = "toteys_db_credentials"
-  #   }
-  # }
+  
+  environment {
+    variables = {
+      SECRET_NAME = "toteys_db_credentials"
+    }
+  }
 }
 
 
