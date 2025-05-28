@@ -1,70 +1,60 @@
 import logging
 import boto3
+from botocore.exceptions import ClientError
+
 from utils.db_utils import connect_to_db, close_db_connection
+from utils.utils import upload_file
+
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-import shutil 
+
 from datetime import datetime
 
-client = 'b'
 
-logger = logging.getLogger(__name__)
+def extract_data(client=None):
+    if not client:
+        client = boto3.client("s3")
 
-# with ZipFile('spam.zip', 'w') as myzip:
-#     myzip.write('eggs.txt')
+    logger = logging.getLogger(__name__)
 
+    table_name_list = [
+        "counterparty",
+        "currency",
+        "department",
+        "design",
+        "staff",
+        "sales_order",
+        "address",
+        "payment",
+        "purchase_order",
+        "payment_type",
+        "transaction",
+    ]
 
-
-def extract_data(client):
-    
-    table_name_list = ["counterparty",
-                        "currency",
-                        "department",
-                        "design",
-                        "staff",
-                        "sales_order",
-                        "address",
-                        "payment",
-                        "purchase_order",
-                        "payment_type",
-                        "transaction"]
-    
     conn = connect_to_db()
-    time_now = datetime.now()
 
-   
-    for table in table_name_list:
-        df = pd.read_sql("SELECT * FROM " + table, conn)
-        pyarrow_table = pa.Table.from_pandas(df)
-        pq.write_table(pyarrow_table, f'data/{time_now}{table}.parquet')
-        #creates each parquet file in data directory
-
-  
-
-extract_data(client)
-
-
-
-
-    # try:
-    #     transformer_func(*table_name_list)
-        
-    # except:
-
-
-    # finally:
-    #     close_db_connection(conn)
-    
-    # return 
-
-
-
-# get info from db
-# reformat db data 
-# to parquet 
-# file upload using util 
-# return
-
-
-
+    try:
+        time_now = datetime.now()
+        for table in table_name_list:
+            df = pd.read_sql("SELECT * FROM " + table, conn)
+            pyarrow_table = pa.Table.from_pandas(df)
+            pq.write_table(
+                pyarrow_table, f"data/{time_now}{table}.parquet"
+            )  # creates each parquet file in data directory
+            prefix = time_now
+            upload_file(
+                client,
+                file=f"data/{time_now}{table}.parquet",
+                bucket_name="ainsdale-ingestion-bucket",
+                key=f"{prefix}/{time_now}{table}.parquet",
+            )
+        logger.info(
+            "File successfully uploaded to ingestion bucket"
+        )  # log code here for success
+        return {"status": "Success", "code": 200}
+    except ClientError as e:
+        logger.error(e)
+        return {"status": "failure", "error": e}
+    finally:
+        close_db_connection()
