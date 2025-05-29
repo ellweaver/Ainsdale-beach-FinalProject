@@ -35,23 +35,23 @@ def extract_data(client=None):
     conn = connect_to_db()
 
     try:
-        time_now = datetime.now()
+        time_now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+
         for table in table_name_list:
             df = pd.read_sql("SELECT * FROM " + table, conn)
             pyarrow_table = pa.Table.from_pandas(df)
             pq.write_table(
                 pyarrow_table, f"data/{time_now}{table}.parquet"
             )  # creates each parquet file in data directory
-            prefix = time_now
             upload_file(
                 client,
                 file=f"data/{time_now}{table}.parquet",
                 bucket_name="ainsdale-ingestion-bucket",
-                key=f"{prefix}/{time_now}{table}.parquet",
+                key=f"{time_now}/{time_now}{table}.parquet",
             )
         logger.info(
             "File successfully uploaded to ingestion bucket"
-        )  # log code here for success
+        )  
         return {"status": "Success", "code": 200}
     except ClientError as e:
         logger.error(e)
