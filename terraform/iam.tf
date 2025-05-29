@@ -75,4 +75,29 @@ resource "aws_iam_role_policy_attachment" "extract_lambda_logs_policy_attachment
 }
 
 
+data "aws_iam_policy_document" "sns_policy" {
+  statement {
 
+    effect = "Allow"
+
+    actions = [
+        "sns:Publish"
+    ]
+      
+
+    resources = [
+        "${aws_sns_topic.sns_extract.arn}"
+    ]
+
+  }
+}
+
+resource "aws_iam_policy" "extract_lambda_sns_policy" {
+  name   = "extract-lambda-sns-policy"
+  policy = data.aws_iam_policy_document.sns_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "extract_lambda_sns_policy_attachment" {
+    role = aws_iam_role.extract_lambda_role.name
+    policy_arn = aws_iam_policy.extract_lambda_sns_policy.arn
+}

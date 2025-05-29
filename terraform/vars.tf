@@ -21,7 +21,7 @@ variable "processed_bucket_name"{
 
 variable "topic_name" {
  description = "Name of the SNS topic"
- default = "ainsdale_beach" 
+ default = "ainsdale_beach_2" 
 }
 
 variable "email_address" {

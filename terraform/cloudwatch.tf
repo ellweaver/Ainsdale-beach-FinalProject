@@ -15,7 +15,7 @@ resource "aws_cloudwatch_metric_alarm" "ainsdale_beach_alarm" {
 
   actions_enabled = true
 
-  alarm_actions = ["arn:aws:sns:eu-west-2:048204777974:ainsdale_beach"]
+  alarm_actions = ["arn:aws:sns:eu-west-2:${data.aws_caller_identity.current.account_id}:ainsdale_beach_2"]
 
-  ok_actions = ["arn:aws:sns:eu-west-2:048204777974:ainsdale_beach"]
+  ok_actions = ["arn:aws:sns:eu-west-2:${data.aws_caller_identity.current.account_id}:ainsdale_beach_2"]
 }
