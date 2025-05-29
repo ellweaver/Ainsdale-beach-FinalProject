@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "sns_extract" {
-  name            = "user-updates-topic"
+  name            = "${var.topic_name}"
   delivery_policy = <<EOF
 {
   "http": {
@@ -20,11 +20,24 @@ resource "aws_sns_topic" "sns_extract" {
 }
 EOF
 }
+resource "aws_sns_topic_subscription" "email" {
+  topic_arn = "${aws_sns_topic.sns_extract.arn}"
+  protocol  = "email"
+  endpoint  = "${var.email_address}"
+}
 
 resource "aws_sns_topic_policy" "sns_extract_policy" {
   arn = aws_sns_topic.sns_extract.arn
 
   policy = data.aws_iam_policy_document.sns_extract_topic_policy.json
+}
+
+output "sns_topic_arn" {
+  value = "${aws_sns_topic.sns_extract.arn}"
+}
+
+output "sns_subscription_arn" {
+  value = "${aws_sns_topic_subscription.email.arn}"
 }
 
 data "aws_iam_policy_document" "sns_extract_topic_policy" {
@@ -60,7 +73,7 @@ data "aws_iam_policy_document" "sns_extract_topic_policy" {
     }
 
     resources = [
-      aws_sns_topic.test.arn,
+      aws_sns_topic.sns_extract.arn,
     ]
 
     sid = "__default_statement_ID"
