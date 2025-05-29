@@ -6,7 +6,7 @@ variable "account_arn" {
 
 variable "python_bucket_name"{
     type=string
-    default = "ainsdale-python-bucket"
+    default = "ainsdale-python-bucket-2"
 }
 
 variable "ingestion_bucket_name"{
