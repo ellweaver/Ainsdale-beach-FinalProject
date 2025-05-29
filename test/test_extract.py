@@ -3,15 +3,25 @@ from unittest.mock import Mock, patch
 import sys
 import pytest
 import logging
-
+import os
+import boto3
+from moto import mock_aws
 
 class TestExtractData:
 
-    @pytest.mark.skip
     @pytest.mark.it("uploads to s3")
-    def test_extract_data_uploads_succesfully_to_s3(self, test_client):
-        response = extract_data(test_client)
+    def test_extract_data_uploads_succesfully_to_s3(self, test_s3):
+        response = extract_data(test_s3)
         assert response == {"status": "Success", "code": 200}
+
+        
+        key = "test_file.json"
+        data = [{"a": 1}, {"b": 2}]
+        resp = write_to_s3(s3, data, "test_bucket", key)
+        listing = s3.list_objects_v2(Bucket="test_bucket")
+        assert len(listing["Contents"]) == 11
+        assert listing["Contents"][0]["Key"] == "test_file.json"
+        assert resp
         # use MockAWS - in new test bucket count file uploads - compare before and after
 
     @pytest.mark.skip
@@ -52,26 +62,26 @@ class TestExtractDataLogging:
     # change below tests to use caplog
     @pytest.mark.skip
     @pytest.mark.it("creates correct info logs")
-    def test_extract_data_creates_info_log(self, test_client):
+    def test_extract_data_creates_info_log(self, test_client, caplog):
         with self.assertLogs() as captured:
             extract_data(test_client)
         self.assertEqual(captured.records[0].levelname, "INFO")
 
     @pytest.mark.skip
     @pytest.mark.it("outputs correct info message")
-    def test_extract_data_outputs_correct_info_message(self, test_client):
+    def test_extract_data_outputs_correct_info_message(self, test_client, caplog):
         with self.assertLogs() as captured:
             extract_data(test_client)
         self.assertIn("is this message there>", captured.output[0])
 
     @pytest.mark.skip
-    @pytest.mark.it("outputs correct number of info message")
-    def test_extract_data_outputs_correct_number_of_info_message(self, test_client):
+    @pytest.mark.it("outputs correct number of info messages")
+    def test_extract_data_outputs_correct_number_of_info_message(self, test_client, caplog):
         with self.assertLogs() as captured:
             extract_data(test_client)
         self.assertEqual(len(captured.records[0]), 1)
 
     @pytest.mark.skip
     @pytest.mark.it("test extract data creates correct warning logs")
-    def test_extract_data_creates_correct_info_logs(self):
+    def test_extract_data_creates_correct_info_logs(self, caplog):
         pass
