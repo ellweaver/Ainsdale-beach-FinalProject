@@ -8,17 +8,14 @@ resource "aws_cloudwatch_metric_alarm" "ainsdale_beach_alarm" {
   statistic           = "Minimum"
   threshold           = 1   # Set your threshold value
 
-  dimensions = {
-    "extract_lambda" = {
-      FunctionName = aws_lambda_function.extract_lambda.function_name
-    }
-  }
+  dimensions = {FunctionName = aws_lambda_function.extract_lambda.function_name}
+      
 
   alarm_description = "Alarm when error occurs in the ainsdale beach lambda"
 
   actions_enabled = true
 
-  alarm_actions = ["arn:aws:sns:eu-west-2:aws_sns_topic.sns_extract"]
+  alarm_actions = ["arn:aws:sns:eu-west-2:048204777974:ainsdale_beach"]
 
-  ok_actions = ["arn:aws:sns:your_aws_region:aws_sns_topic.sns_extract"]
+  ok_actions = ["arn:aws:sns:eu-west-2:048204777974:ainsdale_beach"]
 }
