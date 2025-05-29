@@ -1,4 +1,4 @@
-resource "aws_s3_bucket" "python-bucket"{
+resource "aws_s3_bucket" "python_bucket"{
     bucket = var.python_bucket_name
     tags = {
     "description":"creation of s3 Bucket to store python functions"
