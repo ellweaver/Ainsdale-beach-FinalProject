@@ -32,7 +32,9 @@ data "aws_iam_policy_document" "s3_data_policy_doc" {
         "${aws_s3_bucket.ingestion_bucket.arn}",
         "${aws_s3_bucket.ingestion_bucket.arn}/*",
         "${aws_s3_bucket.processed_bucket.arn}",
-        "${aws_s3_bucket.processed_bucket.arn}/*"
+        "${aws_s3_bucket.processed_bucket.arn}/*",
+        "${aws_s3_bucket.python_bucket.arn}",
+        "${aws_s3_bucket.python_bucket.arn}/*"
     ]
 
   }
