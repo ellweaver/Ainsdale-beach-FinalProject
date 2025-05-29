@@ -1,12 +1,4 @@
-variable "python_bucket" {
-  type    = string
-  default = "ainsdale-python-bucket"
-}
 
-variable "ingestion_bucket_name" {
-  type    = string
-  default = "ainsdale-ingestion-bucket"
-}
 
 variable "account_arn" {
   type    = string
@@ -23,3 +15,12 @@ variable "ingestion_bucket_name"{
     default = "ainsdale-ingestion-bucket"
 }
 
+variable "topic_name" {
+ description = "Name of the SNS topic"
+ default = "ainsdale_beach" 
+}
+
+variable "email_address" {
+ description = "Email address for SNS subscription"
+ default = "beachainsdale@gmail.com"
+}
