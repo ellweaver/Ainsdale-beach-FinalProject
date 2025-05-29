@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "sns_extract_topic_policy" {
     }
 
     resources = [
-      aws_sns_topic.test.arn,
+      aws_sns_topic.sns_extract.arn,
     ]
 
     sid = "__default_statement_ID"
