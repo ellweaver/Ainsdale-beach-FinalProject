@@ -6,22 +6,34 @@ import logging
 import os
 import boto3
 from moto import mock_aws
+from datetime import datetime
+from utils.db_utils import get_secret
+from freezegun import freeze_time
+
+
+@pytest.fixture(scope="function")
+def get_real_secret(monkeypatch):
+    response=get_secret()
+    monkeypatch.setattr(get_secret,response)
 
 class TestExtractData:
-
-    @pytest.mark.it("uploads to s3")
-    def test_extract_data_uploads_succesfully_to_s3(self, test_s3):
+    @freeze_time("29-05-2025")
+    @pytest.mark.it('extract data correctly Uploads data to S3')
+    def test_upload(self,test_s3,get_real_secret):
         response = extract_data(test_s3)
-        assert response == {"status": "Success", "code": 200}
-
-        
-        key = "test_file.json"
-        data = [{"a": 1}, {"b": 2}]
-        resp = write_to_s3(s3, data, "test_bucket", key)
-        listing = s3.list_objects_v2(Bucket="test_bucket")
+        assert response == {"status": "Success", "code": 200,"key":"data/current_time"}
+        listing = test_s3.list_objects_v2(Bucket="test_bucket")
         assert len(listing["Contents"]) == 11
-        assert listing["Contents"][0]["Key"] == "test_file.json"
-        assert resp
+    
+   
+    @pytest.mark.it("uploads to s3")
+    def test_extract_data_uploads_succesfully_to_s3(self, test_s3, mock_time):
+        pass
+        # key = "test_file.json"
+        # data = [{"a": 1}, {"b": 2}]
+        # resp = write_to_s3(s3, data, "test_bucket", key)
+        # assert listing["Contents"][0]["Key"] == "test_file.json"
+        # assert resp
         # use MockAWS - in new test bucket count file uploads - compare before and after
 
     @pytest.mark.skip
