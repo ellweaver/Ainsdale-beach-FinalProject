@@ -14,6 +14,11 @@ variable "ingestion_bucket_name"{
     default = "ainsdale-ingestion-bucket"
 }
 
+variable "processed_bucket_name"{
+  type= string
+  default = "ainsdale-processed-bucket"
+}
+
 variable "topic_name" {
  description = "Name of the SNS topic"
  default = "ainsdale_beach" 
