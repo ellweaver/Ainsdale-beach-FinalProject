@@ -22,17 +22,25 @@ jobs:
       - name: set-up-dev-environment
         run: make dev-setup
 
-      - name: Load .env file
-        uses: xom9ikk/dotenv@v2.3.0
-      - name: Some other action
-        run: |
-          touch ./env
-          echo "${{ env.secrets.DB_NAME }}"
-          echo "${{ env.secrets.DB_HOST }}"
-          echo "${{ env.secrets.DB_PORT }}"
-          echo "${{ env.secrets.DB_USER }}"
-          echo "${{ env.secrets.DB_PASSWORD }}"
-    
+      # - name: Load .env file
+      #   uses: xom9ikk/dotenv@v2.3.0
+      # - name: Some other action
+      #   run: |
+      #     touch ./env
+      #     echo "${{ env.secrets.DB_NAME }}"
+      #     echo "${{ env.secrets.DB_HOST }}"
+      #     echo "${{ env.secrets.DB_PORT }}"
+      #     echo "${{ env.secrets.DB_USER }}"
+      #     echo "${{ env.secrets.DB_PASSWORD }}"
+
+      - name: Create .env
+        run: 
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> ./env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> ./env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> ./env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> ./env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./env
+      
       - name: run-tests
         run: make run-checks
 
@@ -44,13 +52,7 @@ jobs:
         #   DB_USER: ${{secrets.ABDB_USER}}
         #   DB_PASSWORD: ${{secrets.ABDB_PASSWORD}}
 
-          # - name: Create .env
-      #   run: 
-      #     echo "DB_NAME=${{ secrets.DB_NAME }}" >> ./env
-      #     echo "DB_HOST=${{ secrets.DB_HOST }}" >> ./env
-      #     echo "DB_PORT=${{ secrets.DB_PORT }}" >> ./env
-      #     echo "DB_USER=${{ secrets.DB_USER }}" >> ./env
-      #     echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./env
+
     
      
   deploy-aws:
