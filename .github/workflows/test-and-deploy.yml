@@ -21,14 +21,23 @@ jobs:
         run: make requirements
       - name: set-up-dev-environment
         run: make dev-setup
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@v2.0.3
+        with:
+          envkey_DB_NAME: ${{secrets.ABDB_NAME}}
+          envkey_DB_HOST: ${{secrets.ABDB_HOST}}
+          envkey_DB_PORT: ${{secrets.ABDB_PORT}}
+          envkey_DB_USER: ${{secrets.ABDB_USER}}
+          envkey_DB_PASSWORD: ${{secrets.ABDB_PASSWORD}}
+          file_name: .env
       - name: run-tests
         run: make run-checks
-        env:
-          DB_NAME: ${{secrets.DB_NAME}}
-          DB_HOST: ${{secrets.DB_HOST}}
-          DB_PORT: ${{secrets.DB_PORT}}
-          DB_USER: ${{secrets.DB_USER}}
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
+        # env:
+        #   DB_NAME: ${{secrets.DB_NAME}}
+        #   DB_HOST: ${{secrets.DB_HOST}}
+        #   DB_PORT: ${{secrets.DB_PORT}}
+        #   DB_USER: ${{secrets.DB_USER}}
+        #   DB_PASSWORD: ${{secrets.DB_PASSWORD}}
 
 
   deploy-aws:
