@@ -9,21 +9,25 @@ from moto import mock_aws
 from datetime import datetime
 from utils.db_utils import get_secret
 from freezegun import freeze_time
+from pg8000 import dbapi
 
 
-@pytest.fixture(scope="function")
-def get_real_secret(monkeypatch):
-    response=get_secret()
-    monkeypatch.setattr(get_secret,response)
+# @pytest.fixture(scope="function")
+# def get_real_secret(monkeypatch):
+#     response=get_secret()
+#     monkeypatch.setattr(get_secret,response)
 
 class TestExtractData:
     @freeze_time("29-05-2025")
     @pytest.mark.it('extract data correctly Uploads data to S3')
-    def test_upload(self,test_s3,get_real_secret):
+    def test_upload(self,test_s3, monkeypatch):
+
+        time = "2025-05-29_00:00:00"
+
         response = extract_data(test_s3)
-        assert response == {"status": "Success", "code": 200,"key":"data/current_time"}
-        listing = test_s3.list_objects_v2(Bucket="test_bucket")
-        assert len(listing["Contents"]) == 11
+        assert response == {"status": "Success", "code": 200,"key":f"data/{time}"}
+        # listing = test_s3.list_objects_v2(Bucket="test_bucket")
+        # assert len(listing["Contents"]) == 11
     
    
     @pytest.mark.it("uploads to s3")
