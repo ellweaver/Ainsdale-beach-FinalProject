@@ -23,9 +23,16 @@ jobs:
         run: make dev-setup
       - name: run-tests
         run: make run-checks
+        env:
+          DB_NAME: ${{secrets.ABDB_NAME}}
+          DB_HOST: ${{secrets.ABDB_HOST}}
+          DB_PORT: ${{secrets.ABDB_PORT}}
+          DB_USER: ${{secrets.ABDB_USER}}
+          DB_PASSWORD: ${{secrets.ABDB_PASSWORD}}
+
 
   deploy-aws:
-    if: false
+    if: true
     name: deploy-aws
     needs: run-tests
     environment: dev 
