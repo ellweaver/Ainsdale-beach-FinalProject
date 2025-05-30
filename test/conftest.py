@@ -5,8 +5,6 @@ import boto3
 from pg8000 import dbapi
 from dotenv import load_dotenv
 
-load_dotenv()
-
 @pytest.fixture(autouse=True)
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
@@ -19,7 +17,7 @@ def aws_credentials():
 @pytest.fixture(autouse=True)
 def database_connect(monkeypatch):
     def local_db():
-        # load_dotenv() # may need to change back
+        load_dotenv()
         return dbapi.connect(
             user=os.environ["DB_USER"],
             password=os.environ["DB_PASSWORD"],
