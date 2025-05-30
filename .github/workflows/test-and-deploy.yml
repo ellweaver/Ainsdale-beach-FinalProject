@@ -25,13 +25,12 @@ jobs:
       - name: run-tests
         run: make run-checks
         env:
-          DB_NAME: DB_NAME=${{secrets.ABDB_NAME}}
-          DB_HOST: DB_HOST=${{secrets.ABDB_HOST}}
-          DB_PORT: DB_PORT=${{secrets.ABDB_PORT}}
-          DB_USER: DB_USER=${{secrets.ABDB_USER}}
-          DB_PASSWORD: DB_PASSWORD=${{secrets.ABDB_PASSWORD}}
+          DB_NAME: ${{secrets.ABDB_NAME}}
+          DB_HOST: ${{secrets.ABDB_HOST}}
+          DB_PORT: ${{secrets.ABDB_PORT}}
+          DB_USER: ${{secrets.ABDB_USER}}
+          DB_PASSWORD: ${{secrets.ABDB_PASSWORD}}
 
-        
       # - name: Create .env file
       #   uses: SpicyPizza/create-envfile@v2.0.3
         # with:
