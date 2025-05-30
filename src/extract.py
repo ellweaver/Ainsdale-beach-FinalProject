@@ -51,7 +51,8 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
             "File successfully uploaded to ingestion bucket"
         )  
         return {"status": "Success", "code": 200, "key": f"data/{time_now}"}
-    except ClientError as e:
+    except Exception as e:
+        print(e)
         logger.error(e)
         return {"status": "Failure", "error": e}
     finally:
