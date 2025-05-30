@@ -34,11 +34,11 @@ jobs:
       #     echo "${{ env.secrets.DB_PASSWORD }}"
 
       - name: Create .env
-        run: 
+        run: |
+          echo "DB_USER=${{ secrets.ABDB_USER }}" >> ./.env
           echo "DB_NAME=${{ secrets.ABDB_NAME }}" >> ./.env
           echo "DB_HOST=${{ secrets.ABDB_HOST }}" >> ./.env
           echo "DB_PORT=${{ secrets.ABDB_PORT }}" >> ./.env
-          echo "DB_USER=${{ secrets.ABDB_USER }}" >> ./.env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./.env
       
       - name: run-tests
