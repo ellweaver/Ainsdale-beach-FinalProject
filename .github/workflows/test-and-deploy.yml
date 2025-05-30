@@ -32,28 +32,24 @@ jobs:
       #     echo "${{ env.secrets.DB_PORT }}"
       #     echo "${{ env.secrets.DB_USER }}"
       #     echo "${{ env.secrets.DB_PASSWORD }}"
-
-      - name: Create .env
-        run: |
-          echo "DB_USER=${{ secrets.ABDB_USER }}" >> ./.env
-          echo "DB_NAME=${{ secrets.ABDB_NAME }}" >> ./.env
-          echo "DB_HOST=${{ secrets.ABDB_HOST }}" >> ./.env
-          echo "DB_PORT=${{ secrets.ABDB_PORT }}" >> ./.env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./.env
+          
+        # run: |
+        #   echo "DB_USER=${{ secrets.ABDB_USER }}" >> ./.env
+        #   echo "DB_NAME=${{ secrets.ABDB_NAME }}" >> ./.env
+        #   echo "DB_HOST=${{ secrets.ABDB_HOST }}" >> ./.env
+        #   echo "DB_PORT=${{ secrets.ABDB_PORT }}" >> ./.env
+        #   echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./.env
       
       - name: run-tests
         run: make run-checks
-
-        
-        # env:
-        #   DB_NAME: ${{secrets.ABDB_NAME}}
-        #   DB_HOST: ${{secrets.ABDB_HOST}}
-        #   DB_PORT: ${{secrets.ABDB_PORT}}
-        #   DB_USER: ${{secrets.ABDB_USER}}
-        #   DB_PASSWORD: ${{secrets.ABDB_PASSWORD}}
+        env:
+          DB_NAME: ${{secrets.ABDB_NAME}}
+          DB_HOST: ${{secrets.ABDB_HOST}}
+          DB_PORT: ${{secrets.ABDB_PORT}}
+          DB_USER: ${{secrets.ABDB_USER}}
+          DB_PASSWORD: ${{secrets.ABDB_PASSWORD}}
 
 
-    
      
   deploy-aws:
     if: true
