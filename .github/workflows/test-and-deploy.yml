@@ -23,11 +23,11 @@ jobs:
         run: make dev-setup
       - name: Create .env
         run: 
-          echo "DB_NAME=${{ secrets.ABDB_NAME }}" >> .env
-          echo "DB_HOST=${{ secrets.ABDB_HOST }}" >> .env
-          echo "DB_PORT=${{ secrets.ABDB_PORT }}" >> .env
-          echo "DB_USER=${{ secrets.ABDB_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.ABDB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
       - name: run-tests
         run: make run-checks
 
