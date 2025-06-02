@@ -23,7 +23,8 @@ def database_connect(monkeypatch):
             password=os.environ["DB_PASSWORD"],
             database=os.environ["DB_NAME"],
             host =os.environ["DB_HOST"],
-            port=os.environ["DB_PORT"]
+            port=os.environ["DB_PORT"],
+            timeout=60
     )
 
     monkeypatch.setattr("src.extract.connect_to_db", local_db)
