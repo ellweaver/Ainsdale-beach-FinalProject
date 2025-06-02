@@ -4,28 +4,28 @@ variable "account_arn" {
   default = "arn:aws:iam::048204777974:user/Ainsdale_beach"
 }
 
-variable "python_bucket_name"{
-    type=string
-    default = "ainsdale-python-bucket-2"
+variable "python_bucket_name" {
+  type    = string
+  default = "ainsdale-python-bucket-2"
 }
 
-variable "ingestion_bucket_name"{
-    type=string
-    default = "ainsdale-ingestion-bucket"
+variable "ingestion_bucket_name" {
+  type    = string
+  default = "ainsdale-ingestion-bucket"
 }
 
-variable "processed_bucket_name"{
-  type= string
+variable "processed_bucket_name" {
+  type    = string
   default = "ainsdale-processed-bucket"
 }
 
 variable "topic_name" {
- description = "Name of the SNS topic"
- default = "ainsdale_beach_2" 
+  description = "Name of the SNS topic"
+  default     = "ainsdale_beach_2"
 }
 
 variable "email_address" {
- description = "Email address for SNS subscription"
- default = "beachainsdale@gmail.com"
+  description = "Email address for SNS subscription"
+  default     = "beachainsdale@gmail.com"
 }
 

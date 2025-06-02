@@ -1,18 +1,18 @@
-terraform{
-    required_providers {
-        aws= {
-            source="hashicorp/aws"
-            version = "~> 5.0"
-        }
-    }  
-backend "s3" {
-    bucket="ainsdale-beach-tf-state"
-    key="terraform/state"
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+  backend "s3" {
+    bucket       = "ainsdale-beach-tf-state"
+    key          = "terraform/state"
     use_lockfile = true
-    region="eu-west-2"
-}
+    region       = "eu-west-2"
+  }
 }
 
-provider "aws"{
-     region="eu-west-2"
+provider "aws" {
+  region = "eu-west-2"
 }
