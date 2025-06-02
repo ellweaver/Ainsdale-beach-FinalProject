@@ -36,7 +36,8 @@ def connect_to_db():
         password=secrets["password"],
         database=secrets["database"],
         host=secrets["host"],
-        port=secrets["port"]
+        port=secrets["port"],
+        timeout=15
     )
 
 
