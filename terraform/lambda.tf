@@ -29,6 +29,8 @@ data "archive_file" "python_utils_layer" {
 
 
 
+
+
 resource "aws_s3_object" "extract_file_upload" {
   bucket = aws_s3_bucket.python_bucket.bucket
   key    = "extract_func"
@@ -91,10 +93,11 @@ resource "aws_lambda_function" "extract_lambda" {
 
   s3_bucket = aws_s3_bucket.python_bucket.bucket
   s3_key    = aws_s3_object.extract_file_upload.key
+  source_code_hash=data.archive_file.extract_py.output_base64sha256
   layers = [
     aws_lambda_layer_version.python_utils_layer.arn,
     aws_lambda_layer_version.python_pg8000_layer.arn,
-     aws_lambda_layer_version.python_polars_layer.arn,
+    aws_lambda_layer_version.python_polars_layer.arn,
   ]
 
   timeout = 60

@@ -7,7 +7,7 @@ import os
 import boto3
 from moto import mock_aws
 from datetime import datetime
-from utils.db_utils import get_secret
+from src.db_utils import get_secret
 from freezegun import freeze_time
 from pg8000 import dbapi
 
