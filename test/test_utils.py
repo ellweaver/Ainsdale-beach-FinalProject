@@ -1,6 +1,6 @@
 import pytest
 from moto import mock_aws
-from utils.utils import upload_file, download_file
+from src.utils import upload_file, download_file
 import io
 
 
