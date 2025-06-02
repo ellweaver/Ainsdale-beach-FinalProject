@@ -8,6 +8,7 @@ import polars as pl
 
 from datetime import datetime
 
+
 def lamda_handler(event, context):
     s3_client = boto3.client("s3")
     response = extract_data(s3_client)
@@ -41,7 +42,7 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
     ]
 
     conn = connect_to_db()
-
+    
     try:
         time_now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         current_year= datetime.now().year
