@@ -20,4 +20,4 @@ venv/
 *.zip
 **/.terraform*
 *.tfstate*
-data/
+
