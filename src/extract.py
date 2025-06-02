@@ -13,9 +13,10 @@ def lambda_handler(event, context):
     s3_client = boto3.client("s3")
     response = extract_data(s3_client)
     return response
-    
+
+
 def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
-    """ Extracts data from database and places in ingestion bucket
+    """Extracts data from database and places in ingestion bucket
 
     Args:
         s3_client (_type_, optional): amazon s3.client resource. Defaults to None.
@@ -42,28 +43,35 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
     ]
 
     conn = connect_to_db()
-    
+
     try:
         time_now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        current_year= datetime.now().year
-        current_month= datetime.now().month
-        current_day= datetime.now().day
+        current_year = datetime.now().year
+        current_month = datetime.now().month
+        current_day = datetime.now().day
         for table in table_name_list:
             df = pl.read_database("SELECT * FROM " + table, conn)
             out_buffer = BytesIO()
             df.write_csv(out_buffer)
 
-            upload_file(s3_client, file=out_buffer.getvalue(), bucket_name=bucket, key=f"data/{current_year}/{current_month}/{current_day}/{time_now}/{time_now}_{table}.csv")
+            upload_file(
+                s3_client,
+                file=out_buffer.getvalue(),
+                bucket_name=bucket,
+                key=f"data/{current_year}/{current_month}/{current_day}/{time_now}/{time_now}_{table}.csv",
+            )
 
-        logger.info(
-            "File successfully uploaded to ingestion bucket"
-        )  
-        return {"status": "Success", "code": 200, "key": f"data/{current_year}/{current_month}/{current_day}/{time_now}/", "batch_id":{time_now}}
+        logger.info("File successfully uploaded to ingestion bucket")
+        return {
+            "status": "Success",
+            "code": 200,
+            "key": f"data/{current_year}/{current_month}/{current_day}/{time_now}/","batch_id":{time_now}}
     except Exception as e:
         print(e)
         logger.error(e)
         return {"status": "Failure", "error": e}
     finally:
         close_db_connection(conn)
+
 
 # remove this going forward
