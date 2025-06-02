@@ -4,9 +4,8 @@ from botocore.exceptions import ClientError
 from io import BytesIO
 from utils.db_utils import connect_to_db, close_db_connection
 from utils.utils import upload_file
-import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
+import polars as pl
+
 from datetime import datetime
 
 def lamda_handler(event, context):
@@ -15,6 +14,15 @@ def lamda_handler(event, context):
     return response
     
 def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
+    """ Extracts data from database and places in ingestion bucket
+
+    Args:
+        s3_client (_type_, optional): amazon s3.client resource. Defaults to None.
+        bucket (str, optional):name of ingestion bucket  . Defaults to "ainsdale-ingestion-bucket".
+
+    Returns:
+        dict: status message
+    """
 
     logger = logging.getLogger(__name__)
 
@@ -36,21 +44,20 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
 
     try:
         time_now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-
+        current_year= datetime.now().year
+        current_month= datetime.now().month
+        current_day= datetime.now().day
         for table in table_name_list:
-            df = pd.read_sql("SELECT * FROM " + table, conn)
-            pyarrow_table = pa.Table.from_pandas(df)
-
-
+            df = pl.read_database("SELECT * FROM " + table, conn)
             out_buffer = BytesIO()
-            pq.write_table(pyarrow_table, out_buffer)
+            df.write_csv(out_buffer)
 
-            upload_file(s3_client, file=out_buffer.getvalue(), bucket_name=bucket, key=f"data/{time_now}/{time_now}_{table}.parquet")
+            upload_file(s3_client, file=out_buffer.getvalue(), bucket_name=bucket, key=f"data/{current_year}/{current_month}/{current_day}/{time_now}/{time_now}_{table}.csv")
 
         logger.info(
             "File successfully uploaded to ingestion bucket"
         )  
-        return {"status": "Success", "code": 200, "key": f"data/{time_now}"}
+        return {"status": "Success", "code": 200, "key": f"data/{current_year}/{current_month}/{current_day}/{time_now}/"}
     except Exception as e:
         print(e)
         logger.error(e)
