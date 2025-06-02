@@ -4,6 +4,7 @@ from moto import mock_aws
 import boto3
 from pg8000 import dbapi
 from dotenv import load_dotenv
+import polars as pl
 
 @pytest.fixture(autouse=True)
 def aws_credentials():
@@ -15,19 +16,31 @@ def aws_credentials():
     os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
 
 @pytest.fixture(autouse=True)
-def database_connect(monkeypatch):
-    def local_db():
-        load_dotenv()
-        return dbapi.connect(
-            user=os.environ["DB_USER"],
-            password=os.environ["DB_PASSWORD"],
-            database=os.environ["DB_NAME"],
-            host =os.environ["DB_HOST"],
-            port=os.environ["DB_PORT"],
-            timeout=60
-    )
 
-    monkeypatch.setattr("src.extract.connect_to_db", local_db)
+def database_connect(monkeypatch):
+    def start_empty_conn(*args, **kwargs):
+        return None
+    
+    def close_empty_conn(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr("src.extract.connect_to_db", start_empty_conn)
+
+    monkeypatch.setattr("src.extract.close_db_connection", close_empty_conn)
+
+@pytest.fixture(autouse=True)
+def dummy_df(monkeypatch):
+    def generate_dummy_df(*args, **kwargs):
+        df = pl.DataFrame({
+            "user_id": [101, 102, 103, 104, 105],
+            "is_premium": [True, False, True, False, True],
+            "page_views": [25, 8, 33, 5, 41],
+            "click_rate": [0.12, 0.05, 0.20, 0.03, 0.18]
+        })
+        return df
+
+    monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df) 
+
 
 @pytest.fixture(scope="function")
 def test_s3():

@@ -1,4 +1,10 @@
 from botocore.exceptions import ClientError
+import pandas as pd
+
+
+def make_df(table, conn):
+    df_temp = pd.read_sql("SELECT * FROM " + table, conn)
+    return df_temp
 
 
 def upload_file(client, file, bucket_name,key):

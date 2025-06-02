@@ -15,23 +15,20 @@ from pg8000 import dbapi
 class TestExtractData:
     @freeze_time("29-05-2025")
     @pytest.mark.it("extract data returns correct response")
-    def test_upload(self,test_s3, monkeypatch):
-
-        time = "2025-05-29_00:00:00"
-
+    def test_upload(self, test_s3, dummy_df):
         response = extract_data(test_s3)
-        assert response == {"status": "Success", "code": 200,"key":f"data/{time}"}
+        assert response == {'status': 'Success', 'code': 200, 'key': 'data/2025/5/29/2025-05-29_00:00:00/'}
 
     @freeze_time("29-05-2025")
     @pytest.mark.it("uploads to s3")
     def test_extract_data_uploads_succesfully_to_s3(self, test_s3, test_bucket):
-        key = "data/2025-05-29_00:00:00"
+        key = 'data/2025/5/29/2025-05-29_00:00:00/2025-05-29_00:00:00_address.csv'
         extract_data(test_s3, "test_bucket")
 
         listing = test_s3.list_objects_v2(Bucket="test_bucket")
 
         assert len(listing["Contents"]) == 11
-        assert listing["Contents"][0]["Key"] == "data/2025-05-29_00:00:00/2025-05-29_00:00:00_address.parquet"
+        assert listing["Contents"][0]["Key"] == 'data/2025/5/29/2025-05-29_00:00:00/2025-05-29_00:00:00_address.csv'
         
     @pytest.mark.it("checks uploaded files not empty")
     def test_extract_data_extracts(self, test_s3, test_bucket):
