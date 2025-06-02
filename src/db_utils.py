@@ -11,33 +11,28 @@ def get_secret():
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
+    client = session.client(service_name="secretsmanager", region_name=region_name)
 
     try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
+        get_secret_value_response = client.get_secret_value(SecretId=secret_name)
     except ClientError as e:
         # For a list of exceptions thrown, see
         # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
         raise e
 
-    secret = get_secret_value_response['SecretString']
+    secret = get_secret_value_response["SecretString"]
     return secret
 
 
 def connect_to_db():
     secrets = json.loads(get_secret())
     return dbapi.connect(
-        user=secrets["user"], 
+        user=secrets["user"],
         password=secrets["password"],
         database=secrets["database"],
         host=secrets["host"],
         port=secrets["port"],
-        timeout=15
+        timeout=15,
     )
 
 

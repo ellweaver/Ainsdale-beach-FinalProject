@@ -10,6 +10,7 @@ PROJECT_NAME = ainsdale-beach-etl
 PYTHON_INTERPRETER = python
 WD=$(shell pwd)
 PYTHONPATH=${WD}
+PYTHONPATH_TEST=${WD}/src
 SHELL := /bin/bash
 PROFILE = default
 PIP:=pip
@@ -67,7 +68,7 @@ run-black:
 
 ## Run the unit tests
 unit-test:
-	$(call execute_in_env, PYTHONPATH=${PYTHONPATH} pytest -v)
+	$(call execute_in_env, PYTHONPATH=${PYTHONPATH_TEST} pytest -v)
 
 ## Run the coverage check
 check-coverage:
