@@ -4,12 +4,12 @@ resource "aws_cloudwatch_metric_alarm" "ainsdale_beach_alarm" {
   evaluation_periods  = 1
   metric_name         = "Errors"
   namespace           = "AWS/Lambda"
-  period              = 300  # 5 minutes
+  period              = 300 # 5 minutes
   statistic           = "Minimum"
-  threshold           = 1   # Set your threshold value
+  threshold           = 1 # Set your threshold value
 
-  dimensions = {FunctionName = aws_lambda_function.extract_lambda.function_name}
-      
+  dimensions = { FunctionName = aws_lambda_function.extract_lambda.function_name }
+
 
   alarm_description = "Alarm when error occurs in the ainsdale beach lambda"
 
