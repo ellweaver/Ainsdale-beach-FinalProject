@@ -46,4 +46,5 @@ tzdata==2025.2
 urllib3==2.4.0
 Werkzeug==3.1.3
 xmltodict==0.14.2
-polars==1.30.0
+polars==1.30.04
+pytest-cov
