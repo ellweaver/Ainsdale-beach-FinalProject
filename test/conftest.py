@@ -56,3 +56,12 @@ def test_bucket(test_s3):
             'Type': 'AvailabilityZone',
             'Name': 'string'}
             })
+
+@pytest.fixture(scope='function')
+def test_tf_bucket(test_s3):
+    """Creates mock_bucket for client"""
+    test_s3.create_bucket(Bucket="test_tf_bucket",CreateBucketConfiguration={'LocationConstraint': "eu-west-2",
+        'Location': {
+            'Type': 'AvailabilityZone',
+            'Name': 'string'}
+            })
