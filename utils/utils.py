@@ -1,9 +1,9 @@
 from botocore.exceptions import ClientError
-import pandas as pd
+import polars as pl
 
 
 def make_df(table, conn):
-    df_temp = pd.read_sql("SELECT * FROM " + table, conn)
+    df_temp = pl.read_database("SELECT * FROM " + table, conn)
     return df_temp
 
 
