@@ -16,6 +16,11 @@ resource "aws_iam_role" "extract_lambda_role" {
   assume_role_policy = data.aws_iam_policy_document.trust_policy.json
 }
 
+resource "aws_iam_role" "transform_lambda_role" {
+  name_prefix        = "lambda-transform-role"
+  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
+}
+
 data "aws_iam_policy_document" "s3_data_policy_doc" {
   statement {
 
@@ -64,16 +69,20 @@ data "aws_iam_policy_document" "cloudwatch_logs_policy" {
   }
 }
 
-resource "aws_iam_policy" "extract_logging_policy" {
-  name   = "extract-lambda_logs_policy"
+resource "aws_iam_policy" "lambda_logging_policy" {
+  name   = "lambda_logs_policy"
   policy = data.aws_iam_policy_document.cloudwatch_logs_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "extract_lambda_logs_policy_attachment" {
   role       = aws_iam_role.extract_lambda_role.name
-  policy_arn = aws_iam_policy.extract_logging_policy.arn
+  policy_arn = aws_iam_policy.lambda_logging_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "transform_lambda_logs_policy_attachment" {
+  role       = aws_iam_role.transform_lambda_role.name
+  policy_arn = aws_iam_policy.lambda_logging_policy.arn
+}
 
 data "aws_iam_policy_document" "sns_policy" {
   statement {
@@ -123,14 +132,19 @@ resource "aws_iam_role_policy_attachment" "lambda_secrets_policy_attachment" {
 
 
 
-resource "aws_iam_policy" "extract_lambda_sns_policy" {
-  name   = "extract-lambda-sns-policy"
+resource "aws_iam_policy" "lambda_sns_policy" {
+  name   = "lambda-sns-policy"
   policy = data.aws_iam_policy_document.sns_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "extract_lambda_sns_policy_attachment" {
   role       = aws_iam_role.extract_lambda_role.name
-  policy_arn = aws_iam_policy.extract_lambda_sns_policy.arn
+  policy_arn = aws_iam_policy.lambda_sns_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "transform_lambda_sns_policy_attachment" {
+  role       = aws_iam_role.extract_lambda_role.name
+  policy_arn = aws_iam_policy.lambda_sns_policy.arn
 }
 
 #iam role for step function

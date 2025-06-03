@@ -1,5 +1,6 @@
 resource "aws_cloudwatch_metric_alarm" "ainsdale_beach_alarm" {
-  alarm_name          = "AinsdaleBeachLambdaAlarm"
+  for_each = toset(var.lambda_functions)
+  alarm_name          = "AinsdaleBeach${each.key}LambdaAlarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = 1
   metric_name         = "Errors"
@@ -8,7 +9,9 @@ resource "aws_cloudwatch_metric_alarm" "ainsdale_beach_alarm" {
   statistic           = "Minimum"
   threshold           = 1 # Set your threshold value
 
-  dimensions = { FunctionName = aws_lambda_function.extract_lambda.function_name }
+  dimensions = { FunctionName = each.key}
+
+
 
 
   alarm_description = "Alarm when error occurs in the ainsdale beach lambda"
