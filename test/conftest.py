@@ -73,15 +73,6 @@ def test_tf_bucket(test_s3):
             'Name': 'string'}
             })
 
-    test_s3.create_bucket(
-        Bucket="test_bucket",
-        CreateBucketConfiguration={
-            "LocationConstraint": "eu-west-2",
-            "Location": {"Type": "AvailabilityZone", "Name": "string"},
-        },
-    )
-
-
 @pytest.fixture(scope="function")
 def test_secret_manager():
     """creates secretsmanager client for moto"""
