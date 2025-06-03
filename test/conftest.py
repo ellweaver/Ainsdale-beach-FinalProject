@@ -73,15 +73,6 @@ def test_tf_bucket(test_s3):
             'Name': 'string'}
             })
 
-    test_s3.create_bucket(
-        Bucket="test_bucket",
-        CreateBucketConfiguration={
-            "LocationConstraint": "eu-west-2",
-            "Location": {"Type": "AvailabilityZone", "Name": "string"},
-        },
-    )
-
-
 @pytest.fixture(scope="function")
 def test_secret_manager():
     """creates secretsmanager client for moto"""
@@ -105,3 +96,161 @@ def upload_secret(test_secret_manager):
         ),
     )
 
+@pytest.fixture(autouse=True)
+def extract_df_dummy(*args, **kwargs):
+    """
+    Generates a dummy df that mirrors the structure of extract df
+
+    returns dict of df's, with table names as keys
+    """
+
+    sodf = pl.DataFrame(
+       {
+    "sales_order_id": [1],
+    "created_at": [1],
+    "last_updated": [1],
+    "design_id": [1],
+    "staff_id": [1],
+    "counterparty_id": [1],
+    "units_sold":[1],
+    "unit_price": [1],
+    "currency_id":[1],
+    "agreed_delivery_date": [1],
+    "agreed_payment_date": [1],
+    "agreed_delivery_location_id": [1]
+    })
+
+    ddf = pl.DataFrame(
+    {
+    "design_id": [1],
+    "created_at": [1],
+    "last_updated": [1],
+    "design_name": [1],
+    "file_location": [1],
+    "file_name": [1]
+    })
+
+    cdf = pl.DataFrame(
+       {
+    "currency_id": [1],
+    "currency_code": [1],
+    "created_at":[1],
+    "last_updated":[1]
+    })
+
+    sdf = pl.DataFrame(
+       {
+    "staff_id": [1],
+    "first_name":[1],
+    "last_name":[1],
+    "department_id":[1],
+    "email_address":[1],
+    "created_at":[1],
+    "last_updated":[1]
+    })
+
+    cpdf = pl.DataFrame(
+     {
+    "counterparty_id":  [1],
+    "counterparty_legal_name":  [1],
+    "legal_address_id": [1],
+    "commercial_contact": [1],
+    "delivery_contact": [1],
+    "created_at": [1],
+    "last_updated": [1],
+    })
+
+    adf = pl.DataFrame(
+    {
+    " address_id":  [1],
+    "address_line_1":  [1],
+    "address_line_2": [1],
+    "district ": [1],
+    "city": [1],
+    "postal_code" : [1],
+    "country": [1],
+    "phone" : [1],
+    "created_at" : [1],
+    "last_updated" : [1]
+    }
+    )
+
+    dpdf = pl.DataFrame(
+    {
+    "department_id" : [1],
+    "department_name" : [1],
+    "location" : [1],
+    "manager": [1], 
+    "created_at" : [1],
+    "last_updated" : [1]
+    })
+
+    pdf = pl.DataFrame(
+    {
+    "purchase_order_id": [1], 
+    "created_at" : [1],
+    "last_updated": [1],
+    "staff_id" : [1],
+    "counterparty_id" : [1],
+    "item_code" : [1],
+    "item_quantity" : [1],
+    "item_unit_price": [1], 
+    "currency_id" : [1],
+    "agreed_delivery_date" : [1],
+    "agreed_payment_date": [1], 
+    "agreed_delivery_location_id": [1]
+    })
+
+    ptdf= pl.DataFrame(
+    {
+    "payment_type_id" : [1],
+    "payment_type_name" : [1],
+    "created_at" : [1],
+    "last_updated" : [1]
+    })
+
+    pymdf = pl.DataFrame(
+    {
+    "payment_id" : [1],
+    "created_at": [1],
+    "last_updated": [1],
+    "transaction_id" : [1],
+    "counterparty_id" : [1],
+    "payment_amount": [1],
+    "currency_id" : [1],
+    "payment_type_id": [1], 
+    "paid": [1], 
+    "payment_date" : [1],
+    "company_ac_number": [1], 
+    "counterparty_ac_number" : [1]
+    })
+
+    tdf = pl.DataFrame(
+    {
+    "transaction_id" : [1],
+    "transaction_type": [1], 
+    "sales_order_id": [1], 
+    "purchase_order_id": [1], 
+    "created_at": [1], 
+    "last_updated": [1]  
+    })
+
+    full_mirror_df = {
+        "sales_order": sodf,
+        "design": ddf,
+        "currency": cdf,
+        "staff": sdf,
+        "counterparty": cpdf,
+        "address": adf,
+        "department": dpdf,
+        "purchase": pdf,
+        "payment_type": ptdf,
+        "payment": pymdf,
+        "transaction": tdf}
+
+    return full_mirror_df
+
+
+        
+
+        
