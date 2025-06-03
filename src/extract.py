@@ -2,8 +2,8 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 from io import BytesIO
-from db_utils import connect_to_db, close_db_connection
-from utils import upload_file
+from src.db_utils import connect_to_db, close_db_connection
+from src.utils import upload_file
 import polars as pl
 
 from datetime import datetime
@@ -65,8 +65,7 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
         return {
             "status": "Success",
             "code": 200,
-            "key": f"data/{current_year}/{current_month}/{current_day}/{time_now}/",
-        }
+            "key": f"data/{current_year}/{current_month}/{current_day}/{time_now}/","batch_id":{time_now}}
     except Exception as e:
         print(e)
         logger.error(e)

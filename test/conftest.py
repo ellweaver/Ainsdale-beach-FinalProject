@@ -57,6 +57,22 @@ def test_s3():
 @pytest.fixture(scope="function")
 def test_bucket(test_s3):
     """Creates mock_bucket for client"""
+
+    test_s3.create_bucket(Bucket="test_bucket",CreateBucketConfiguration={'LocationConstraint': "eu-west-2",
+        'Location': {
+            'Type': 'AvailabilityZone',
+            'Name': 'string'}
+            })
+
+@pytest.fixture(scope='function')
+def test_tf_bucket(test_s3):
+    """Creates mock_bucket for client"""
+    test_s3.create_bucket(Bucket="test_tf_bucket",CreateBucketConfiguration={'LocationConstraint': "eu-west-2",
+        'Location': {
+            'Type': 'AvailabilityZone',
+            'Name': 'string'}
+            })
+
     test_s3.create_bucket(
         Bucket="test_bucket",
         CreateBucketConfiguration={
@@ -88,3 +104,4 @@ def upload_secret(test_secret_manager):
             }
         ),
     )
+
