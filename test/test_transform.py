@@ -1,4 +1,4 @@
-from src.transform import transform_data
+from src.transform import transform_data, make_fact_sales_order
 from src.extract import extract_data
 import pytest 
 import logging 
@@ -25,4 +25,21 @@ class TestTransformData:
         listing = test_s3.list_objects_v2(Bucket="test_tf_bucket")
         assert listing["Contents"][0]["Key"] == "data/2025/5/29/2025-05-29_00:00:00/2025-05-29_00:00:00_sales_order.parquet"
 
-    
+class TestMakeFactSalesOrder:
+    @pytest.mark.it('Test make facts sales order data isnt corrupted')
+    def test_facts_sales_order(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        check_df = extract_df_dummy["sales_order"]
+        df = extract_df_dummy["sales_order"]
+        make_fact_sales_order(df)
+
+        assert df.equals(check_df)
+
+    # @pytest.mark.it('Test make facts sales order data isnt corrupted')
+    # def test_facts_sales_order(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+    #     check_df = extract_df_dummy["sales_order"]
+    #     df = extract_df_dummy["sales_order"]
+    #     make_fact_sales_order(df)
+
+    #     assert df.equals(check_df)
+
+        

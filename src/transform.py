@@ -99,7 +99,7 @@ def make_fact_sales_order(sales_order_table):
     Returns:
         dataframe: a newly transformed dataframe for sales orders 
     """
-    return None
+    return sales_order_table
 
 
 def make_dim_date():
