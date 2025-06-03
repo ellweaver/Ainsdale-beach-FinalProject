@@ -5,6 +5,7 @@ import boto3
 from pg8000 import dbapi
 from dotenv import load_dotenv
 import polars as pl
+import json
 
 
 @pytest.fixture(autouse=True)
@@ -56,6 +57,7 @@ def test_s3():
 @pytest.fixture(scope="function")
 def test_bucket(test_s3):
     """Creates mock_bucket for client"""
+
     test_s3.create_bucket(Bucket="test_bucket",CreateBucketConfiguration={'LocationConstraint': "eu-west-2",
         'Location': {
             'Type': 'AvailabilityZone',
@@ -70,3 +72,36 @@ def test_tf_bucket(test_s3):
             'Type': 'AvailabilityZone',
             'Name': 'string'}
             })
+
+    test_s3.create_bucket(
+        Bucket="test_bucket",
+        CreateBucketConfiguration={
+            "LocationConstraint": "eu-west-2",
+            "Location": {"Type": "AvailabilityZone", "Name": "string"},
+        },
+    )
+
+
+@pytest.fixture(scope="function")
+def test_secret_manager():
+    """creates secretsmanager client for moto"""
+    with mock_aws():
+        yield boto3.client("secretsmanager", region_name="eu-west-2")
+
+
+@pytest.fixture(scope="function")
+def upload_secret(test_secret_manager):
+    """upload secretsmanager client for moto"""
+    test_secret_manager.create_secret(
+        Name="toteys_db_credentials",
+        SecretString=json.dumps(
+            {
+                "user": "test_user",
+                "password": "test_password",
+                "host": "test_host",
+                "database": "test_db",
+                "port": "5432",
+            }
+        ),
+    )
+
