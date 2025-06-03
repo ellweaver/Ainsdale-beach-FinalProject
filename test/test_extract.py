@@ -21,6 +21,7 @@ class TestExtractData:
             "status": "Success",
             "code": 200,
             "key": "data/2025/5/29/2025-05-29_00:00:00/",
+            "batch_id": "2025-05-29_00:00:00"
         }
 
     @freeze_time("29-05-2025")

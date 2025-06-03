@@ -34,12 +34,59 @@ class TestMakeFactSalesOrder:
 
         assert df.equals(check_df)
 
-    # @pytest.mark.it('Test make facts sales order data isnt corrupted')
-    # def test_facts_sales_order(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
-    #     check_df = extract_df_dummy["sales_order"]
-    #     df = extract_df_dummy["sales_order"]
-    #     make_fact_sales_order(df)
+# class TestMakeDimDate:
+#     @pytest.mark.it('Test make dim date isnt corrupted')
+#     def test_dim_date(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+#         check_df = extract_df_dummy["date"]
+#         df = extract_df_dummy["date"]
+#         make_fact_sales_order(df)
 
-    #     assert df.equals(check_df)
+#         assert df.equals(check_df)
+
+class TestMakeDimStaff:
+    @pytest.mark.it('Test make dim staff isnt corrupted')
+    def test_dim_staff(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        check_df = extract_df_dummy["staff"]
+        df = extract_df_dummy["staff"]
+        make_fact_sales_order(df)
+
+        assert df.equals(check_df)
+
+class TestMakeDimLocation:
+    @pytest.mark.it('Test make dim location isnt corrupted')
+    def test_dim_location(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        check_df = extract_df_dummy["address"]
+        df = extract_df_dummy["address"]
+        make_fact_sales_order(df)
+
+        assert df.equals(check_df)
+
+class TestMakeDimCurrency:
+    @pytest.mark.it('Test make dim currency isnt corrupted')
+    def test_dim_currency(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        check_df = extract_df_dummy["currency"]
+        df = extract_df_dummy["currency"]
+        make_fact_sales_order(df)
+
+        assert df.equals(check_df)
+
+class TestMakeDimDesign:
+    @pytest.mark.it('Test make dim design isnt corrupted')
+    def test_dim_design(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        check_df = extract_df_dummy["design"]
+        df = extract_df_dummy["design"]
+        make_fact_sales_order(df)
+
+        assert df.equals(check_df)
+
+class TestMakeDimCounterparty:
+    @pytest.mark.it('Test make dim counterparty isnt corrupted')
+    def test_dim_design(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        check_df = extract_df_dummy["counterparty"]
+        df = extract_df_dummy["counterparty"]
+        make_fact_sales_order(df)
+
+        assert df.equals(check_df)
+
 
         
