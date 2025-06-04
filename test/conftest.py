@@ -116,57 +116,57 @@ def extract_df_dummy(*args, **kwargs):
 
     cdf = pl.DataFrame(
        {
-    "currency_id": [1],
-    "currency_code": [1],
-    "created_at":[1],
-    "last_updated":[1]
+    "currency_id": [1,2,3,4],
+    "currency_code": ["GBP","JPY","CNY","EUR"],
+    "created_at":[1,2,3,4],
+    "last_updated":[1,2,3,4]
     })
 
     sdf = pl.DataFrame(
        {
-    "staff_id": [1],
-    "first_name":[1],
-    "last_name":[1],
-    "department_id":[1],
-    "email_address":[1],
-    "created_at":[1],
-    "last_updated":[1]
+    "staff_id": [1,2,3,4],
+    "first_name":[1,2,3,4],
+    "last_name":[1,2,3,4],
+    "department_id":[1,2,3,4],
+    "email_address":[1,2,3,4],
+    "created_at":[1,2,3,4],
+    "last_updated":[1,2,3,4]
     })
 
     cpdf = pl.DataFrame(
      {
-    "counterparty_id":  [1],
-    "counterparty_legal_name":  [1],
-    "legal_address_id": [1],
-    "commercial_contact": [1],
-    "delivery_contact": [1],
-    "created_at": [1],
-    "last_updated": [1],
+    "counterparty_id":  [1,2,3,4],
+    "counterparty_legal_name": [1,2,3,4],
+    "legal_address_id": [1,2,3,4],
+    "commercial_contact": [1,2,3,4],
+    "delivery_contact": [1,2,3,4],
+    "created_at": [1,2,3,4],
+    "last_updated": [1,2,3,4]
     })
 
     adf = pl.DataFrame(
     {
-    " address_id":  [1],
-    "address_line_1":  [1],
-    "address_line_2": [1],
-    "district ": [1],
-    "city": [1],
-    "postal_code" : [1],
-    "country": [1],
-    "phone" : [1],
-    "created_at" : [1],
-    "last_updated" : [1]
+    "address_id": [1,2,3,4],
+    "address_line_1": [1,2,3,4],
+    "address_line_2":[1,2,3,4],
+    "district":[1,2,3,4],
+    "city": [1,2,3,4],
+    "postal_code" :[1,2,3,4],
+    "country": [1,2,3,4],
+    "phone" : [1,2,3,4],
+    "created_at" : [1,2,3,4],
+    "last_updated" :[1,2,3,4]
     }
     )
 
     dpdf = pl.DataFrame(
     {
-    "department_id" : [1],
-    "department_name" : [1],
-    "location" : [1],
-    "manager": [1], 
-    "created_at" : [1],
-    "last_updated" : [1]
+    "department_id" : [1,2,3,4],
+    "department_name" : [1,2,3,4],
+    "location" : [1,2,3,4],
+    "manager": [1,2,3,4],
+    "created_at" : [1,2,3,4],
+    "last_updated" : [1,2,3,4]
     })
 
     pdf = pl.DataFrame(

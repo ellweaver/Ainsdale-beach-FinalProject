@@ -1,9 +1,11 @@
 import boto3
 import logging 
 from io import BytesIO
-from src.utils import upload_file, download_file
+from utils import upload_file, download_file
 import polars as pl
 import pyarrow as pa
+from babel.numbers import get_currency_name
+
 
 
 def lambda_handler(event,context):
@@ -105,14 +107,13 @@ def make_fact_sales_order(sales_order_table):
     
     return sales_order_table
 
-
 def make_dim_date():
     """creates a dim table centred on dates: star schema
 
     Returns:
         dataframe: a newly transformed dataframe for dates
     """
-    pass
+    return 
 
 def make_dim_staff(staff_table, department_table):
     """creates a dim table centred on staff: star schema
@@ -124,7 +125,21 @@ def make_dim_staff(staff_table, department_table):
         dataframe: a newly transformed dataframe for staff details
         , location and email address
     """
-    pass
+    dim_staff = staff_table.join(department_table, on="department_id")
+    dim_staff = dim_staff.drop(["department_id", "created_at", "last_updated", "manager", "created_at_right", "last_updated_right"])
+    dim_staff = dim_staff.select([
+            "staff_id",
+            "first_name",
+            "last_name",
+            "department_name",
+            "location",
+            "email_address"
+            ])
+
+    return dim_staff
+
+    
+    
 
 def make_dim_location(address_table):
     """creates a dim table centred on location: star schema
@@ -135,8 +150,12 @@ def make_dim_location(address_table):
     Returns:
         dataframe: a newly transformed dataframe for customer details (address) 
     """
+    dim_location = address_table.drop(["created_at","last_updated"])
+    dim_location = dim_location.rename({"address_id":"location_id"})
 
-    pass
+    return dim_location
+
+ 
 
 def make_dim_currency(currency_table):
     """creates a dim table centred on purchase currency: star schema
@@ -147,7 +166,11 @@ def make_dim_currency(currency_table):
     Returns:
         dataframe: a newly transformed dataframe for purchase currency
     """
-    pass
+    dim_currency = currency_table.drop(["created_at","last_updated"])
+    columns = pl.col("currency_code")
+    dim_currency = dim_currency.with_columns(pl.col("currency_code").map_elements(get_currency_name).alias("currency_name"))
+
+    return dim_currency
 
 def make_dim_design(design_table):
     """creates a dim table centred on product design: star schema
@@ -158,9 +181,8 @@ def make_dim_design(design_table):
     Returns:
         dataframe: a newly transformed dataframe for product designs
     """
-    dim_design = design_table.clone()
-    dim_design.drop_in_place("created_at")
-    dim_design.drop_in_place("last_updated")
+    dim_design = design_table.drop(["created_at","last_updated"])
+
     return dim_design
 
 def make_dim_counterparty(counterparty_table, address_table):
@@ -172,4 +194,24 @@ def make_dim_counterparty(counterparty_table, address_table):
     Returns:
         dataframe: a newly transformed dataframe for counterparties
     """
-    pass
+    dim_counterparty = counterparty_table.join(address_table ,left_on="legal_address_id", right_on="address_id")
+    dim_counterparty = dim_counterparty.rename({
+        "address_line_1": "counterparty_legal_address_line_1",
+        "address_line_2": "counterparty_legal_address_line_2",
+        "district": "counterparty_legal_district",
+        "city": "counterparty_legal_city", 
+        "postal_code": "counterparty_legal_postal_code", 
+        "country": "counterparty_legal_country",
+        "phone": "counterparty_legal_phone_number"
+        })
+    dim_counterparty = dim_counterparty.drop([
+        "legal_address_id",
+        "commercial_contact",
+        "delivery_contact",
+        "created_at",
+        "last_updated",
+        "created_at_right",
+        "last_updated_right"
+        ])
+    
+    return dim_counterparty
