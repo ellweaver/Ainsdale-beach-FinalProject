@@ -42,7 +42,7 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
         "transaction",
     ]
 
-    conn = connect_to_db("toteys_db_credentials")
+    conn = connect_to_db()
 
     try:
         time_now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")

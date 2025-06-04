@@ -6,9 +6,10 @@ from pg8000 import dbapi
 from dotenv import load_dotenv
 import polars as pl
 import json
-import pyarrow.parquet as pq
+#import pyarrow.parquet as pq
 import numpy as np
-import pathlib
+
+#import pathlib
 
 @pytest.fixture(autouse=True)
 def aws_credentials():
@@ -29,7 +30,10 @@ def database_connect(monkeypatch):
         return None
 
     monkeypatch.setattr("src.extract.connect_to_db", start_empty_conn)
-
+    monkeypatch.setattr("load.connect_to_db", start_empty_conn)
+    #monkeypatch.setattr("load.conn", start_empty_conn)
+    monkeypatch.setv("load.test_variable", start_empty_conn)
+    monkeypatch.setattr("load.close_db_connection", close_empty_conn)
     monkeypatch.setattr("src.extract.close_db_connection", close_empty_conn)
 
 
@@ -79,6 +83,7 @@ def test_tf_bucket(test_s3):
             "Location": {"Type": "AvailabilityZone", "Name": "string"},
         },
     )
+    return test_s3
 
 
 @pytest.fixture(scope="function")
@@ -103,6 +108,19 @@ def upload_secret(test_secret_manager):
             }
         ),
     )
+    test_secret_manager.create_secret(
+        Name="toteys_db_warehouse_credentials",
+        SecretString=json.dumps(
+            {
+                "user": "test_user",
+                "password": "test_password",
+                "host": "test_host",
+                "database": "test_db",
+                "port": "5432",
+            }
+        ),
+    )
+
 
 
 @pytest.fixture(autouse=True)
@@ -269,4 +287,5 @@ def extract_df_dummy(*args, **kwargs):
     }
 
     return full_mirror_df
+
 

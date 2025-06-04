@@ -1,8 +1,11 @@
 import boto3
 import polars as pl
+
 import logging
 from db_utils import connect_to_db, close_db_connection
-from src.utils import download_file, upload_file
+from utils import download_file, upload_file
+import pyarrow
+from botocore.exceptions import ClientError
 
 '''
 1. Needs to download the latest data from the transform bucket
@@ -41,16 +44,19 @@ def load_data(s3_client,key,batch_id,sourcebucket="ainsdale_transform_bucket"):
             file = download_file(
                     s3_client, sourcebucket, f"{key}{batch_id}_{table}.parquet"
                 )
-            df = pl.read_parquet(file["body"])
-            df.write_database(table_name=table, connection=conn)
-            logger.info(f"${table} successfully uploaded to data warehouse")
-
+            if file.get("body"):
+                with open (file["body"].read(), "r") as parq:
+                 df = pl.read_parquet(parq)
+            else: 
+                raise ClientError(operation_name="test",error_response={'Error':{'Error':f"{table} file not found",'Code':404, 'Message':f"{table} file not found"}})
+            test_variable=df.write_database(table_name=table, connection=conn)
+            logger.info(f"{table} successfully uploaded to data warehouse")
         logger.info("All tables successfully uploaded to data warehouse")
         return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
         
     except Exception as e:
-        logger.error(e)
-        return {"status": "Failure", "code": e}
+        logger.error(str(e))
+        return {"status": "Failure", "code": str(e)}
 
 
             
