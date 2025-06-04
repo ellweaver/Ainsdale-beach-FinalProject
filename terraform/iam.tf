@@ -11,13 +11,8 @@ data "aws_iam_policy_document" "trust_policy" {
   }
 }
 
-resource "aws_iam_role" "extract_lambda_role" {
-  name_prefix        = "lambda-extract-role"
-  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
-}
-
-resource "aws_iam_role" "transform_lambda_role" {
-  name_prefix        = "lambda-transform-role"
+resource "aws_iam_role" "lambda_role" {
+  name_prefix        = "lambda-role"
   assume_role_policy = data.aws_iam_policy_document.trust_policy.json
 }
 
@@ -51,7 +46,7 @@ resource "aws_iam_policy" "s3_write_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_s3_write_policy_attachment" {
-  role       = aws_iam_role.extract_lambda_role.name
+  role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.s3_write_policy.arn
 }
 
@@ -74,15 +69,11 @@ resource "aws_iam_policy" "lambda_logging_policy" {
   policy = data.aws_iam_policy_document.cloudwatch_logs_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "extract_lambda_logs_policy_attachment" {
-  role       = aws_iam_role.extract_lambda_role.name
+resource "aws_iam_role_policy_attachment" "lambda_logs_policy_attachment" {
+  role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.lambda_logging_policy.arn
 }
 
-resource "aws_iam_role_policy_attachment" "transform_lambda_logs_policy_attachment" {
-  role       = aws_iam_role.transform_lambda_role.name
-  policy_arn = aws_iam_policy.lambda_logging_policy.arn
-}
 
 data "aws_iam_policy_document" "sns_policy" {
   statement {
@@ -124,7 +115,7 @@ resource "aws_iam_policy" "secrets_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_secrets_policy_attachment" {
-  role       = aws_iam_role.extract_lambda_role.name
+  role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.secrets_policy.arn
 }
 
@@ -137,15 +128,11 @@ resource "aws_iam_policy" "lambda_sns_policy" {
   policy = data.aws_iam_policy_document.sns_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "extract_lambda_sns_policy_attachment" {
-  role       = aws_iam_role.extract_lambda_role.name
+resource "aws_iam_role_policy_attachment" "lambda_sns_policy_attachment" {
+  role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.lambda_sns_policy.arn
 }
 
-resource "aws_iam_role_policy_attachment" "transform_lambda_sns_policy_attachment" {
-  role       = aws_iam_role.extract_lambda_role.name
-  policy_arn = aws_iam_policy.lambda_sns_policy.arn
-}
 
 #iam role for step function
 resource "aws_iam_role" "step_functions_role" {
