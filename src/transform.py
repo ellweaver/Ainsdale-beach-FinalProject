@@ -5,6 +5,7 @@ from utils import upload_file, download_file
 import polars as pl
 import pyarrow as pa
 from babel.numbers import get_currency_name
+from datetime import date
 
 
 
@@ -103,7 +104,9 @@ def make_fact_sales_order(sales_order_table):
         dataframe: a newly transformed dataframe for sales orders 
 
     """
-    
+    print(sales_order_table)
+
+    fact_sales_order = ""
     
     return sales_order_table
 
@@ -113,7 +116,25 @@ def make_dim_date():
     Returns:
         dataframe: a newly transformed dataframe for dates
     """
-    return 
+    start_date = date(1960, 1, 1)
+    end_date = date(2060, 1, 1)
+    interval = "1d"
+
+    dim_date = pl.DataFrame({
+        "date_id": pl.date_range(start=start_date, end=end_date, interval=interval, eager=True)
+        })
+
+    dim_date = dim_date.with_columns(
+        (pl.col("date_id").dt.year()).alias("year"),
+        (pl.col("date_id").dt.month()).alias("month"),
+        (pl.col("date_id").dt.day()).alias("day"),
+        (pl.col("date_id").dt.weekday()).alias("day_of_week"),
+        (pl.col("date_id").dt.strftime("%A")).alias("day_name"),
+        (pl.col("date_id").dt.strftime("%B")).alias("month_name"),
+        (pl.col("date_id").dt.quarter()).alias("quarter"),
+    )
+
+    return dim_date
 
 def make_dim_staff(staff_table, department_table):
     """creates a dim table centred on staff: star schema
