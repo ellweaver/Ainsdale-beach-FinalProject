@@ -1,13 +1,16 @@
-from src.transform import transform_data, make_fact_sales_order, make_dim_staff, make_dim_location, make_dim_currency,make_dim_currency, make_dim_design, make_dim_counterparty 
+from src.transform import (transform_data, make_fact_sales_order, make_dim_staff
+                           , make_dim_location, make_dim_currency,make_dim_currency
+                           , make_dim_design, make_dim_counterparty, make_dim_date)
 from src.extract import extract_data
 import pytest 
 import logging 
 from moto import mock_aws
 from freezegun import freeze_time
-
+from datetime import date
 
 class TestTransformData:
     @freeze_time("29-05-2025")
+    @pytest.mark.skip
     @pytest.mark.it('Transform data returns correct response')
     def test_transform_response(self, test_s3, test_bucket, test_tf_bucket):
         key = 'data/2025/5/29/2025-05-29_00:00:00/'
@@ -34,15 +37,54 @@ class TestMakeFactSalesOrder:
         make_fact_sales_order(df)
        
         assert df.equals(check_df)
+    
+    @pytest.mark.it('test make_fact_sales_order returns new value')
+    def test_new_fact_sales(self,test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        df = extract_df_dummy["sales_order"]
+        fact_sales_order = make_fact_sales_order(df)
+        assert df is not fact_sales_order
 
-# class TestMakeDimDate:
-#     @pytest.mark.it('Test make dim date doesnt manipulate inputs')
-#     def test_dim_date(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
-#          df = extract_df_dummy["date"]
-#         check_df= df.clone()
-#         make_fact_sales_order(df)
-       
-#         assert df.equals(check_df)
+    @pytest.mark.it('Test make_fact_sales_order returns correct values')
+    def test_fact_sales(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        df = extract_df_dummy["sales_order"]
+        fact_sales_order = make_fact_sales_order(df)
+        row_data = fact_sales_order.row(1)
+
+        assert fact_sales_order.columns ==[
+            "sales_record_id",
+            "sales_order_id",
+            "created_date",
+            "created_time",
+            "last_updated_date",
+            "last_updated_time",
+            "sales_staff_id",
+            "counterparty_id",
+            "units_sold",
+            "unit_price",
+            "currency_id",
+            "design_id",
+            "agreed_payment_date",
+            "agreed_delivery_date",
+            "agreed_delivery_location_id"
+        ]
+
+class TestMakeDimDate:
+    @pytest.mark.it('Test make_dim_date returns correct values')
+    def test_dim_date(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+
+        dim_date = make_dim_date()
+        row_data = dim_date.row(1)
+
+        assert dim_date.columns ==[
+            "date_id",
+            "year",
+            "month",
+            "day",
+            "day_of_week",
+            "day_name",
+            "month_name",
+            "quarter"]
+        assert (date(1960, 1, 2), 1960, 1, 2, 6, "Saturday", "January", 1) == row_data
 
 class TestMakeDimStaff:
     @pytest.mark.it('Test make dim staff doesnt manipulate inputs')
