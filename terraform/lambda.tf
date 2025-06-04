@@ -92,7 +92,7 @@ resource "aws_lambda_layer_version" "pyarrow_layer" {
 resource "aws_lambda_function" "extract_lambda" {
   function_name = "extract_lambda_function"
   runtime       = "python3.13"
-  role          = aws_iam_role.extract_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   handler       = "extract.lambda_handler"
 
   s3_bucket = aws_s3_bucket.python_bucket.bucket
@@ -117,12 +117,37 @@ resource "aws_lambda_function" "extract_lambda" {
 resource "aws_lambda_function" "transform_lambda" {
   function_name = "transform_lambda_function"
   runtime       = "python3.13"
-  role          = aws_iam_role.transform_lambda_role.arn
+  role          = aws_iam_role.lambda_role.arn
   handler       = "transform.lambda_handler"
 
   s3_bucket = aws_s3_bucket.python_bucket.bucket
   s3_key    = aws_s3_object.transform_file_upload.key
   source_code_hash=data.archive_file.transform_py.output_base64sha256
+  layers = [
+    aws_lambda_layer_version.python_utils_layer.arn,
+    aws_lambda_layer_version.python_polars_layer.arn,
+    aws_lambda_layer_version.pyarrow_layer.arn
+  ]
+
+  timeout = 60
+  publish = true
+
+  environment {
+    variables = {
+      SECRET_NAME = "toteys_db_credentials"
+    }
+  }
+}
+
+resource "aws_lambda_function" "load_lambda" {
+  function_name = "load_lambda_function"
+  runtime       = "python3.13"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "load.lambda_handler"
+
+  s3_bucket = aws_s3_bucket.python_bucket.bucket
+  s3_key    = aws_s3_object.load_file_upload.key
+  source_code_hash=data.archive_file.load_py.output_base64sha256
   layers = [
     aws_lambda_layer_version.python_utils_layer.arn,
     aws_lambda_layer_version.python_polars_layer.arn,
