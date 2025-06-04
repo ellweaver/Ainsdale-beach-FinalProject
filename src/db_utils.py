@@ -4,9 +4,8 @@ from botocore.exceptions import ClientError
 import json
 
 
-def get_secret(client=None):
+def get_secret(secret_name, client=None):
 
-    secret_name = "toteys_db_credentials"
     region_name = "eu-west-2"
 
     # Create a Secrets Manager client
@@ -25,8 +24,8 @@ def get_secret(client=None):
     return secret
 
 
-def connect_to_db():
-    secrets = json.loads(get_secret())
+def connect_to_db(secret_name):
+    secrets = json.loads(get_secret(secret_name))
     return dbapi.connect(
         user=secrets["user"],
         password=secrets["password"],

@@ -8,7 +8,7 @@ import json
 class TestSecretsManager:
     @pytest.mark.it("test secret manager returns correct secret")
     def test_secret_manager_returns_secrets(self, upload_secret):
-        output = json.loads(get_secret(upload_secret))
+        output = json.loads(get_secret("toteys_db_credentials", upload_secret))
 
         assert output == {
             "user": "test_user",
@@ -22,7 +22,7 @@ class TestSecretsManager:
     def test_secrets_manager_for_error(self, test_secret_manager):
 
         with pytest.raises(ClientError) as exc:
-            get_secret(test_secret_manager)
+            get_secret("toteys_db_credentials", test_secret_manager)
         err = exc.value.response["Error"]
         assert err == {
             "Message": "Secrets Manager can't find the specified secret.",

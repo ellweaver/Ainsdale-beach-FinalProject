@@ -42,7 +42,7 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
         "transaction",
     ]
 
-    conn = connect_to_db()
+    conn = connect_to_db("toteys_db_credentials")
 
     try:
         time_now = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
@@ -65,7 +65,9 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
         return {
             "status": "Success",
             "code": 200,
-            "key": f"data/{current_year}/{current_month}/{current_day}/{time_now}/","batch_id":time_now}
+            "key": f"data/{current_year}/{current_month}/{current_day}/{time_now}/",
+            "batch_id": time_now,
+        }
     except Exception as e:
         print(e)
         logger.error(e)
