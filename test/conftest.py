@@ -240,8 +240,7 @@ def extract_df_dummy(*args, **kwargs):
         
 @pytest.fixture(autouse=True)
 def dummy_df(monkeypatch, extract_df_dummy):
-    def generate_dummy_df(*args, **kwargs):
-        df_list=[
+    df_list=[
                  extract_df_dummy["counterparty"],
                  extract_df_dummy["currency"],
                  extract_df_dummy["department"], 
@@ -254,8 +253,8 @@ def dummy_df(monkeypatch, extract_df_dummy):
                  extract_df_dummy["payment_type"],
                  extract_df_dummy["transaction"]
                  ]
-        items= iter(df_list)
+         
         
-        return next(items)
+    dfs = iter(df_list)
 
-    monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
+    monkeypatch.setattr("src.extract.pl.read_database", lambda *_ :next(dfs) )

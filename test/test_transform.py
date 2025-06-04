@@ -28,10 +28,10 @@ class TestTransformData:
 class TestMakeFactSalesOrder:
     @pytest.mark.it('Test make facts sales order data isnt corrupted')
     def test_facts_sales_order(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
-        check_df = extract_df_dummy["sales_order"]
         df = extract_df_dummy["sales_order"]
+        check_df= df.clone()
         make_fact_sales_order(df)
-
+       
         assert df.equals(check_df)
 
 # class TestMakeDimDate:
@@ -46,10 +46,10 @@ class TestMakeFactSalesOrder:
 class TestMakeDimStaff:
     @pytest.mark.it('Test make dim staff isnt corrupted')
     def test_dim_staff(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
-        check_df = extract_df_dummy["staff"]
-        test_df =extract_df_dummy["department"]
         df = extract_df_dummy["staff"]
         df2=extract_df_dummy["department"]
+        check_df = df.clone()
+        test_df = df2.clone()
         make_dim_staff(df,df2)
 
         assert df.equals(check_df)
@@ -59,7 +59,7 @@ class TestMakeDimLocation:
     @pytest.mark.it('Test make dim location isnt corrupted')
     def test_dim_location(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
         check_df = extract_df_dummy["address"]
-        df = extract_df_dummy["address"]
+        df = check_df.clone()
         make_dim_location(df)
 
         assert df.equals(check_df)
@@ -68,7 +68,7 @@ class TestMakeDimCurrency:
     @pytest.mark.it('Test make dim currency isnt corrupted')
     def test_dim_currency(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
         check_df = extract_df_dummy["currency"]
-        df = extract_df_dummy["currency"]
+        df = check_df.clone()
         make_dim_currency(df)
 
         assert df.equals(check_df)
@@ -77,18 +77,30 @@ class TestMakeDimDesign:
     @pytest.mark.it('Test make dim design isnt corrupted')
     def test_dim_design(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
         check_df = extract_df_dummy["design"]
-        df = extract_df_dummy["design"]
+        df = check_df.clone()
         make_dim_design(df)
 
         assert df.equals(check_df)
+    
+    @pytest.mark.it('test make dim design returns new value')
+    def test_new_dim_design(self,test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        df =extract_df_dummy["design"]
+        dim_design=make_dim_design(df)
+        assert df is not dim_design
+
+    @pytest.mark.it('test make dim design has correct columns')
+    def test_correct_columns(self,test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+        df =extract_df_dummy["design"]
+        dim_design=make_dim_design(df)
+        assert dim_design.columns ==["design_id","design_name","file_location","file_name"]
 
 class TestMakeDimCounterparty:
     @pytest.mark.it('Test make dim counterparty isnt corrupted')
     def test_dim_counterparty(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
         check_df = extract_df_dummy["counterparty"]
         test_df= extract_df_dummy["address"]
-        df = extract_df_dummy["counterparty"]
-        df2= extract_df_dummy["address"]
+        df = check_df.clone()
+        df2= test_df.clone()
         make_dim_counterparty(df,df2)
 
         assert df.equals(check_df)

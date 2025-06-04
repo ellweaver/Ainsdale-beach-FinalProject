@@ -66,12 +66,12 @@ def transform_data(s3_client,key,batch_id, sourcebucket="ainsdale-ingestion-buck
 
     try:
         for table in table_name_list:
-            print(f"{key}{batch_id}_{table}.csv")
 
             file = download_file(s3_client, sourcebucket, f"{key}{batch_id}_{table}.csv")
             
             df_dict[table] = pl.read_csv(file["body"])
-        print(df_dict["sales_order"].get_columns())
+    
+
         processed_dict["fact_sales_order"] = make_fact_sales_order(df_dict["sales_order"])
         processed_dict["dim_date"] = make_dim_date()
         processed_dict["dim_staff"] = make_dim_staff(df_dict["staff"], df_dict["department"])
@@ -101,10 +101,8 @@ def make_fact_sales_order(sales_order_table):
         dataframe: a newly transformed dataframe for sales orders 
 
     """
-    try:
-        sales_order_table.drop_in_place("design_id")
-    except Exception:
-        pass
+    
+    
     return sales_order_table
 
 
@@ -137,6 +135,7 @@ def make_dim_location(address_table):
     Returns:
         dataframe: a newly transformed dataframe for customer details (address) 
     """
+
     pass
 
 def make_dim_currency(currency_table):
@@ -159,7 +158,10 @@ def make_dim_design(design_table):
     Returns:
         dataframe: a newly transformed dataframe for product designs
     """
-    pass
+    dim_design = design_table.clone()
+    dim_design.drop_in_place("created_at")
+    dim_design.drop_in_place("last_updated")
+    return dim_design
 
 def make_dim_counterparty(counterparty_table, address_table):
     """creates a dim table centred on counterparty (customer) details: star schema
