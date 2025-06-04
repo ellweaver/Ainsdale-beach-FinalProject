@@ -29,8 +29,6 @@ data "archive_file" "python_utils_layer" {
 
 
 
-
-
 resource "aws_s3_object" "extract_file_upload" {
   bucket = aws_s3_bucket.python_bucket.bucket
   key    = "extract_func"
@@ -83,6 +81,12 @@ resource "aws_lambda_layer_version" "python_polars_layer" {
 
 }
 
+resource "aws_lambda_layer_version" "pyarrow_layer" {
+  s3_bucket  = "ainsdale-layers-files"
+  s3_key     = "pyarrow_layer.zip"
+  layer_name = "python_pyarrow"
+
+}
 
 
 resource "aws_lambda_function" "extract_lambda" {
@@ -122,6 +126,7 @@ resource "aws_lambda_function" "transform_lambda" {
   layers = [
     aws_lambda_layer_version.python_utils_layer.arn,
     aws_lambda_layer_version.python_polars_layer.arn,
+    aws_lambda_layer_version.pyarrow_layer.arn
   ]
 
   timeout = 60
