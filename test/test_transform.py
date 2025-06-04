@@ -1,4 +1,4 @@
-from src.transform import transform_data, make_fact_sales_order
+from src.transform import transform_data, make_fact_sales_order, make_dim_staff, make_dim_location, make_dim_currency,make_dim_currency, make_dim_design, make_dim_counterparty 
 from src.extract import extract_data
 import pytest 
 import logging 
@@ -47,17 +47,20 @@ class TestMakeDimStaff:
     @pytest.mark.it('Test make dim staff isnt corrupted')
     def test_dim_staff(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
         check_df = extract_df_dummy["staff"]
+        test_df =extract_df_dummy["department"]
         df = extract_df_dummy["staff"]
-        make_fact_sales_order(df)
+        df2=extract_df_dummy["department"]
+        make_dim_staff(df,df2)
 
         assert df.equals(check_df)
+        assert df2.equals(test_df)
 
 class TestMakeDimLocation:
     @pytest.mark.it('Test make dim location isnt corrupted')
     def test_dim_location(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
         check_df = extract_df_dummy["address"]
         df = extract_df_dummy["address"]
-        make_fact_sales_order(df)
+        make_dim_location(df)
 
         assert df.equals(check_df)
 
@@ -66,7 +69,7 @@ class TestMakeDimCurrency:
     def test_dim_currency(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
         check_df = extract_df_dummy["currency"]
         df = extract_df_dummy["currency"]
-        make_fact_sales_order(df)
+        make_dim_currency(df)
 
         assert df.equals(check_df)
 
@@ -75,18 +78,21 @@ class TestMakeDimDesign:
     def test_dim_design(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
         check_df = extract_df_dummy["design"]
         df = extract_df_dummy["design"]
-        make_fact_sales_order(df)
+        make_dim_design(df)
 
         assert df.equals(check_df)
 
 class TestMakeDimCounterparty:
     @pytest.mark.it('Test make dim counterparty isnt corrupted')
-    def test_dim_design(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
+    def test_dim_counterparty(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy):
         check_df = extract_df_dummy["counterparty"]
+        test_df= extract_df_dummy["address"]
         df = extract_df_dummy["counterparty"]
-        make_fact_sales_order(df)
+        df2= extract_df_dummy["address"]
+        make_dim_counterparty(df,df2)
 
         assert df.equals(check_df)
+        assert df2.equals(test_df)
 
 
         

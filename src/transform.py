@@ -3,6 +3,7 @@ import logging
 from io import BytesIO
 from src.utils import upload_file, download_file
 import polars as pl
+import pyarrow as pa
 
 
 def lambda_handler(event,context):
@@ -70,7 +71,7 @@ def transform_data(s3_client,key,batch_id, sourcebucket="ainsdale-ingestion-buck
             file = download_file(s3_client, sourcebucket, f"{key}{batch_id}_{table}.csv")
             
             df_dict[table] = pl.read_csv(file["body"])
-
+        print(df_dict["sales_order"].get_columns())
         processed_dict["fact_sales_order"] = make_fact_sales_order(df_dict["sales_order"])
         processed_dict["dim_date"] = make_dim_date()
         processed_dict["dim_staff"] = make_dim_staff(df_dict["staff"], df_dict["department"])
@@ -98,7 +99,12 @@ def make_fact_sales_order(sales_order_table):
 
     Returns:
         dataframe: a newly transformed dataframe for sales orders 
+
     """
+    try:
+        sales_order_table.drop_in_place("design_id")
+    except Exception:
+        pass
     return sales_order_table
 
 

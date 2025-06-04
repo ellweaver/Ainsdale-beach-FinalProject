@@ -31,22 +31,6 @@ def database_connect(monkeypatch):
     monkeypatch.setattr("src.extract.close_db_connection", close_empty_conn)
 
 
-@pytest.fixture(autouse=True)
-def dummy_df(monkeypatch):
-    def generate_dummy_df(*args, **kwargs):
-        df = pl.DataFrame(
-            {
-                "user_id": [101, 102, 103, 104, 105],
-                "is_premium": [True, False, True, False, True],
-                "page_views": [25, 8, 33, 5, 41],
-                "click_rate": [0.12, 0.05, 0.20, 0.03, 0.18],
-            }
-        )
-        return df
-
-    monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
-
-
 @pytest.fixture(scope="function")
 def test_s3():
     """creates secretsmanager client for moto"""
@@ -243,7 +227,7 @@ def extract_df_dummy(*args, **kwargs):
         "counterparty": cpdf,
         "address": adf,
         "department": dpdf,
-        "purchase": pdf,
+        "purchase_order": pdf,
         "payment_type": ptdf,
         "payment": pymdf,
         "transaction": tdf}
@@ -254,3 +238,24 @@ def extract_df_dummy(*args, **kwargs):
         
 
         
+@pytest.fixture(autouse=True)
+def dummy_df(monkeypatch, extract_df_dummy):
+    def generate_dummy_df(*args, **kwargs):
+        df_list=[
+                 extract_df_dummy["counterparty"],
+                 extract_df_dummy["currency"],
+                 extract_df_dummy["department"], 
+                 extract_df_dummy["design"],
+                 extract_df_dummy["staff"],
+                 extract_df_dummy["sales_order"],
+                 extract_df_dummy["address"],
+                 extract_df_dummy["payment"],
+                 extract_df_dummy["purchase_order"],
+                 extract_df_dummy["payment_type"],
+                 extract_df_dummy["transaction"]
+                 ]
+        items= iter(df_list)
+        
+        return next(items)
+
+    monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
