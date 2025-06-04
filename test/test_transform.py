@@ -50,7 +50,7 @@ class TestMakeFactSalesOrder:
         fact_sales_order = make_fact_sales_order(df)
         row_data = fact_sales_order.row(1)
 
-        assert fact_sales_order.columns ==[
+        assert fact_sales_order.columns == [
             "sales_record_id",
             "sales_order_id",
             "created_date",
