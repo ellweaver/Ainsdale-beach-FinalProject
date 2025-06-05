@@ -4,7 +4,6 @@ from transform import (
     make_dim_staff,
     make_dim_location,
     make_dim_currency,
-    make_dim_currency,
     make_dim_design,
     make_dim_counterparty,
     make_dim_date,
@@ -15,7 +14,6 @@ import logging
 from moto import mock_aws
 from freezegun import freeze_time
 from datetime import date, time
-
 
 
 class TestTransformData:
@@ -179,8 +177,6 @@ class TestMakeDimStaff:
             "email_address",
         ]
         assert (2, 2, 2, 2, 2, 2) == row_data
-        
-
 
 
 class TestMakeDimLocation:
@@ -307,8 +303,8 @@ class TestMakeDimCounterparty:
         assert df is not dim_counterparty
         assert df2 is not dim_counterparty
 
-    @pytest.mark.it("test make dim counterparty returns new value")
-    def test_new_dim_counterparty(
+    @pytest.mark.it("test make dim counterparty returns correct content")
+    def test_dim_counterparty_content(
         self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy
     ):
         df = extract_df_dummy["counterparty"]

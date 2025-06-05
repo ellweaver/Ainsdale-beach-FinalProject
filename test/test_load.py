@@ -8,7 +8,7 @@ import logging
 class TestLoadData:
     @pytest.mark.it("Test load data retrieves parquets from transform s3 bucket")
     
-    def test_load_data(self, test_tf_bucket ):
+    def test_load_data(self, test_tf_bucket):
         table_names = {
         "fact_sales_order": "",
         "dim_date": "",

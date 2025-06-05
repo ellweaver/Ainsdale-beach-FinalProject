@@ -2,8 +2,6 @@ import os
 import pytest
 from moto import mock_aws
 import boto3
-from pg8000 import dbapi
-from dotenv import load_dotenv
 import polars as pl
 import json
 from datetime import datetime, date
@@ -33,21 +31,20 @@ def database_connect(monkeypatch):
     monkeypatch.setattr("extract.close_db_connection", close_empty_conn)
 
 
+# @pytest.fixture(autouse=True)
+# def dummy_df(monkeypatch):
+#     def generate_dummy_df(*args, **kwargs):
+#         df = pl.DataFrame(
+#             {
+#                 "user_id": [101, 102, 103, 104, 105],
+#                 "is_premium": [True, False, True, False, True],
+#                 "page_views": [25, 8, 33, 5, 41],
+#                 "click_rate": [0.12, 0.05, 0.20, 0.03, 0.18],
+#             }
+#         )
+#         return df
 
-@pytest.fixture(autouse=True)
-def dummy_df(monkeypatch):
-    def generate_dummy_df(*args, **kwargs):
-        df = pl.DataFrame(
-            {
-                "user_id": [101, 102, 103, 104, 105],
-                "is_premium": [True, False, True, False, True],
-                "page_views": [25, 8, 33, 5, 41],
-                "click_rate": [0.12, 0.05, 0.20, 0.03, 0.18],
-            }
-        )
-        return df
-
-    monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
+#     monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
 
 
 @pytest.fixture(scope="function")
@@ -80,6 +77,8 @@ def test_tf_bucket(test_s3):
             "Location": {"Type": "AvailabilityZone", "Name": "string"},
         },
     )
+
+    return test_s3
 
 
 @pytest.fixture(scope="function")
@@ -116,11 +115,6 @@ def upload_secret(test_secret_manager):
             }
         ),
     )
-
-
-
-
-
 
 @pytest.fixture(autouse=True)
 def extract_df_dummy(*args, **kwargs):
@@ -276,7 +270,7 @@ def extract_df_dummy(*args, **kwargs):
             "paid": [1],
             "payment_date": [1],
             "company_ac_number": [1],
-            "counterparty_ac_number": [1],
+            "counterparty_ac_number": [1]
         }
     )
 
@@ -287,7 +281,7 @@ def extract_df_dummy(*args, **kwargs):
             "sales_order_id": [1],
             "purchase_order_id": [1],
             "created_at": [1],
-            "last_updated": [1],
+            "last_updated": [1]
         }
     )
 
