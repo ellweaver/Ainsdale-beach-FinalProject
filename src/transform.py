@@ -4,8 +4,9 @@ from io import BytesIO
 from utils import upload_file, download_file
 import polars as pl
 import pyarrow as pa
-from babel.numbers import get_currency_name
 from datetime import date
+import mpu 
+
 
 
 def lambda_handler(event, context):
@@ -17,8 +18,8 @@ def transform_data(
     s3_client,
     key,
     batch_id,
-    sourcebucket="ainsdale-ingestion-bucket",
-    destinationbucket="ainsdale-processed-bucket",
+    source_bucket="ainsdale-ingestion-bucket",
+    destination_bucket="ainsdale-processed-bucket",
 ):
     """takes data from source bucket transforms into parquet format in starschema and uploads to destination bucket
 
@@ -76,11 +77,10 @@ def transform_data(
         for table in table_name_list:
 
             file = download_file(
-                s3_client, sourcebucket, f"{key}{batch_id}_{table}.csv"
+                s3_client, source_bucket, f"{key}{batch_id}_{table}.csv"
             )
 
-            df_dict[table] = pl.read_csv(file["body"])
-
+            df_dict[table] = pl.read_csv(file["body"], try_parse_dates=True)
         processed_dict["fact_sales_order"] = make_fact_sales_order(
             df_dict["sales_order"]
         )
@@ -96,15 +96,26 @@ def transform_data(
             df_dict["counterparty"], df_dict["address"]
         )
 
-        # for value in processed dict
-        # format as parquet to buffer
-        # upload buffer to s3
+        for table, value in processed_dict.items():
+            out_buffer = BytesIO()
+            value.write_parquet(out_buffer)
+
+            
+            upload_file(
+                s3_client,
+                file=out_buffer.getvalue(),
+                bucket_name=destination_bucket,
+                key=f"{key}{batch_id}_{table}.parquet"
+            )
+            
+        # listing = s3_client.list_objects_v2(Bucket=destination_bucket)
+        # print(listing["Contents"][0]["Key"])
 
         return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
 
     except Exception as e:
         logger.error(e)
-        return {"status": "Failure", "code": e}
+        return {"status": "Failure", "message": e}
 
 def make_fact_sales_order(sales_order_table):
     """creates a fact table centred on sales orders: star schema
@@ -227,11 +238,14 @@ def make_dim_currency(currency_table):
     Returns:
         dataframe: a newly transformed dataframe for purchase currency
     """
+
     dim_currency = currency_table.drop(["created_at", "last_updated"])
     columns = pl.col("currency_code")
     dim_currency = dim_currency.with_columns(
-        pl.col("currency_code").map_elements(get_currency_name).alias("currency_name")
+        pl.col("currency_code").map_elements(mpu.units.get_currency, return_dtype=object).alias("currency_name")
     )
+    
+    dim_currency = dim_currency.with_columns(pl.col("currency_name").map_elements(str,return_dtype=str))
 
     return dim_currency
 
