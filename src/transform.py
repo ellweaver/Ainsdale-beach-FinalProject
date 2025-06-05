@@ -6,6 +6,7 @@ import polars as pl
 import pyarrow as pa
 from babel.numbers import get_currency_name
 from datetime import date
+import mpu ###
 
 
 def lambda_handler(event, context):
@@ -79,8 +80,7 @@ def transform_data(
                 s3_client, sourcebucket, f"{key}{batch_id}_{table}.csv"
             )
 
-            df_dict[table] = pl.read_csv(file["body"])
-
+            df_dict[table] = pl.read_csv(file["body"], try_parse_dates=True)
         processed_dict["fact_sales_order"] = make_fact_sales_order(
             df_dict["sales_order"]
         )
@@ -96,15 +96,17 @@ def transform_data(
             df_dict["counterparty"], df_dict["address"]
         )
 
+        # for key, value in proccessed_dict:
+
         # for value in processed dict
         # format as parquet to buffer
         # upload buffer to s3
-
+        
         return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
 
     except Exception as e:
         logger.error(e)
-        return {"status": "Failure", "code": e}
+        return {"status": "Failure", "message": e}
 
 def make_fact_sales_order(sales_order_table):
     """creates a fact table centred on sales orders: star schema
@@ -227,11 +229,13 @@ def make_dim_currency(currency_table):
     Returns:
         dataframe: a newly transformed dataframe for purchase currency
     """
+
     dim_currency = currency_table.drop(["created_at", "last_updated"])
     columns = pl.col("currency_code")
     dim_currency = dim_currency.with_columns(
-        pl.col("currency_code").map_elements(get_currency_name).alias("currency_name")
+        pl.col("currency_code").map_elements(mpu.units.get_currency).alias("currency_name")
     )
+    dim_currency = dim_currency.with_columns(pl.col("currency_name").map_elements(str))
 
     return dim_currency
 

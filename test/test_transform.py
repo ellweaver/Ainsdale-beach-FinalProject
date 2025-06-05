@@ -18,12 +18,12 @@ from datetime import date, time
 
 class TestTransformData:
     @freeze_time("29-05-2025")
-    # @pytest.mark.skip
     @pytest.mark.it("Transform data returns correct response")
     def test_transform_response(self, test_s3, test_bucket, test_tf_bucket):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
         batch_id = "2025-05-29_00:00:00"
         extract_data(s3_client=test_s3, bucket="test_bucket")
+
         response = transform_data(
             test_s3,
             key,
@@ -38,7 +38,6 @@ class TestTransformData:
             "batch_id": batch_id,
         }
 
-    # @pytest.mark.skip
     @pytest.mark.it("Transform data uploads correctly to S3")
     def test_transform_upload(self, test_s3, test_bucket, test_tf_bucket):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
@@ -243,10 +242,10 @@ class TestMakeDimCurrency:
         df = extract_df_dummy["currency"]
         dim_currency = make_dim_currency(df)
         data = dim_currency.get_column("currency_name")
-        assert "British Pound" in data
+        assert "Pound Sterling" in data
         assert "Euro" in data
-        assert "Japanese Yen" in data
-        assert "Chinese Yuan" in data
+        assert "Yen" in data
+        assert "Yuan Renminbi" in data
 
 
 class TestMakeDimDesign:
