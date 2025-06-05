@@ -103,7 +103,7 @@ def upload_secret(test_secret_manager):
                 "password": "test_password",
                 "host": "test_host",
                 "database": "test_db",
-                "port": "5432",
+                "port": "0",
             }
         ),
     )
@@ -115,7 +115,7 @@ def upload_secret(test_secret_manager):
                 "password": "test_password",
                 "host": "test_host",
                 "database": "test_db",
-                "port": "5432",
+                "port": "0",
             }
         ),
     )

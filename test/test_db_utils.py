@@ -15,7 +15,7 @@ class TestGetDBSecrets:
             "password": "test_password",
             "host": "test_host",
             "database": "test_db",
-            "port": "5432",
+            "port": "0",
         }
 
     @pytest.mark.it("test get db secrets_ returns error when secret does not exist")
@@ -39,7 +39,7 @@ class TestGetDBWarehouseSecrets:
             "password": "test_password",
             "host": "test_host",
             "database": "test_db",
-            "port": "5432",
+            "port": "0",
         }
 
     @pytest.mark.it("test get db warehouse secrets returns error when secret does not exist")
