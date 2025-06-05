@@ -87,10 +87,10 @@ resource "aws_lambda_layer_version" "pyarrow_layer" {
 
 }
 
-resource "aws_lambda_layer_version" "babel_layer" {
+resource "aws_lambda_layer_version" "mpu_layer" {
   s3_bucket  = "ainsdale-layers-files"
-  s3_key     = "babel_layer.zip"
-  layer_name = "python_babel"
+  s3_key     = "mpu_layer.zip"
+  layer_name = "python_mpu"
 
 }
 
@@ -133,7 +133,7 @@ resource "aws_lambda_function" "transform_lambda" {
     aws_lambda_layer_version.python_utils_layer.arn,
     aws_lambda_layer_version.python_polars_layer.arn,
     aws_lambda_layer_version.pyarrow_layer.arn,
-    aws_lambda_layer_version.babel_layer.arn
+    aws_lambda_layer_version.mpu_layer.arn
   ]
 
   timeout = 60
