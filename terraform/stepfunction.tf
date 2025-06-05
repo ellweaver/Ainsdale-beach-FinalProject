@@ -17,7 +17,7 @@ resource "aws_sfn_state_machine" "ainsdale_beach_etl_state_machine" {
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "arn:aws:lambda:eu-west-2:048204777974:function:extract_lambda_function:$LATEST",
+        "FunctionName": "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:function:extract_lambda_function:$LATEST",
         "Payload": "{% $states.input %}"
       },
       "Retry": [
@@ -41,7 +41,7 @@ resource "aws_sfn_state_machine" "ainsdale_beach_etl_state_machine" {
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "arn:aws:lambda:eu-west-2:048204777974:function:transform_lambda_function:$LATEST",
+        "FunctionName": "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:function:transform_lambda_function:$LATEST",
         "Payload": "{% $states.input %}"
       },
       "Retry": [
@@ -65,7 +65,7 @@ resource "aws_sfn_state_machine" "ainsdale_beach_etl_state_machine" {
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "arn:aws:lambda:eu-west-2:048204777974:function:load_lambda_function:$LATEST",
+        "FunctionName": "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:function:load_lambda_function:$LATEST",
         "Payload": "{% $states.input %}"
       },
       "Retry": [
