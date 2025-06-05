@@ -29,3 +29,7 @@ variable "email_address" {
   default     = "beachainsdale@gmail.com"
 }
 
+variable "lambda_functions" {
+  type = list(string)
+  default = [ "aws_lambda_function.extract_lambda.function_name", "aws_lambda_function.transform_lambda.function_name" ]
+}
