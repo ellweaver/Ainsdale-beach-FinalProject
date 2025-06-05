@@ -18,7 +18,7 @@ from datetime import date, time
 
 class TestTransformData:
     @freeze_time("29-05-2025")
-    @pytest.mark.skip
+    # @pytest.mark.skip
     @pytest.mark.it("Transform data returns correct response")
     def test_transform_response(self, test_s3, test_bucket, test_tf_bucket):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
@@ -38,7 +38,7 @@ class TestTransformData:
             "batch_id": batch_id,
         }
 
-    @pytest.mark.skip
+    # @pytest.mark.skip
     @pytest.mark.it("Transform data uploads correctly to S3")
     def test_transform_upload(self, test_s3, test_bucket, test_tf_bucket):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
