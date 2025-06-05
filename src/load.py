@@ -23,6 +23,17 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 def load_data(s3_client,key,batch_id,sourcebucket="ainsdale_transform_bucket",test=False):
+    """takes data from transform bucket and upload to data warehoue
+
+    Args:
+        s3_client (_type_): _description_
+        key (str): key of folder containing most recent upload
+        sourcebucket (str, optional): name of source bucket. Defaults to "ainsdale_transform_bucket".
+        test which can be set to true during testing to avoid unwanted behaviour".
+
+    Returns:
+        dict:dictionary containing status code and key
+    """
     conn=None
     if not test:
         conn = connect_to_db("toteys_db_warehouse_credentials")
