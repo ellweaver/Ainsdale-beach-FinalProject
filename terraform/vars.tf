@@ -31,5 +31,6 @@ variable "email_address" {
 
 variable "lambda_functions" {
   type = list(string)
-  default = [ "aws_lambda_function.extract_lambda.function_name", "aws_lambda_function.transform_lambda.function_name" ]
+  default = [ "aws_lambda_function.extract_lambda.function_name", "aws_lambda_function.transform_lambda.function_name",
+  "aws_lambda_function.load_lambda.function_name" ]
 }

@@ -28,8 +28,26 @@ def database_connect(monkeypatch):
         return None
 
     monkeypatch.setattr("extract.connect_to_db", start_empty_conn)
-
+    monkeypatch.setattr("load.connect_to_db", start_empty_conn)
+    monkeypatch.setattr("load.close_db_connection", close_empty_conn)
     monkeypatch.setattr("extract.close_db_connection", close_empty_conn)
+
+
+
+@pytest.fixture(autouse=True)
+def dummy_df(monkeypatch):
+    def generate_dummy_df(*args, **kwargs):
+        df = pl.DataFrame(
+            {
+                "user_id": [101, 102, 103, 104, 105],
+                "is_premium": [True, False, True, False, True],
+                "page_views": [25, 8, 33, 5, 41],
+                "click_rate": [0.12, 0.05, 0.20, 0.03, 0.18],
+            }
+        )
+        return df
+
+    monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
 
 
 @pytest.fixture(scope="function")
@@ -82,10 +100,26 @@ def upload_secret(test_secret_manager):
                 "password": "test_password",
                 "host": "test_host",
                 "database": "test_db",
-                "port": "5432",
+                "port": "0",
             }
         ),
     )
+    test_secret_manager.create_secret(
+        Name="toteys_db_warehouse_credentials",
+        SecretString=json.dumps(
+            {
+                "user": "test_user",
+                "password": "test_password",
+                "host": "test_host",
+                "database": "test_db",
+                "port": "0",
+            }
+        ),
+    )
+
+
+
+
 
 
 @pytest.fixture(autouse=True)

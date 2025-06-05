@@ -5,7 +5,7 @@ resource "aws_cloudwatch_metric_alarm" "ainsdale_beach_alarm" {
   evaluation_periods  = 1
   metric_name         = "Errors"
   namespace           = "AWS/Lambda"
-  period              = 300 # 5 minutes
+  period              = 360 # 5 minutes
   statistic           = "Minimum"
   threshold           = 1 # Set your threshold value
 
