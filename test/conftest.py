@@ -27,9 +27,9 @@ def database_connect(monkeypatch):
     def close_empty_conn(*args, **kwargs):
         return None
 
-    monkeypatch.setattr("src.extract.connect_to_db", start_empty_conn)
+    monkeypatch.setattr("extract.connect_to_db", start_empty_conn)
 
-    monkeypatch.setattr("src.extract.close_db_connection", close_empty_conn)
+    monkeypatch.setattr("extract.close_db_connection", close_empty_conn)
 
 
 @pytest.fixture(scope="function")
