@@ -1,4 +1,4 @@
-from src.extract import extract_data
+from extract import extract_data
 from unittest.mock import Mock, patch
 import sys
 import pytest

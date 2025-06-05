@@ -12,10 +12,7 @@ from utils import download_file
    event["batch_id"] referring to current batch
 3. For each table, it needs to upload to the data warehouse
 4. Import is going to get key and batch_id
-
-
 '''
-
 
 def lambda_handler(event, context):
     s3_client = boto3.client("s3")

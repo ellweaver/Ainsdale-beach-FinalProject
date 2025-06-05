@@ -2,14 +2,10 @@ import os
 import pytest
 from moto import mock_aws
 import boto3
-from pg8000 import dbapi
-from dotenv import load_dotenv
 import polars as pl
 import json
-#import pyarrow.parquet as pq
-import numpy as np
+from datetime import datetime, date
 
-#import pathlib
 
 @pytest.fixture(autouse=True)
 def aws_credentials():
@@ -29,27 +25,26 @@ def database_connect(monkeypatch):
     def close_empty_conn(*args, **kwargs):
         return None
 
-    monkeypatch.setattr("src.extract.connect_to_db", start_empty_conn)
+    monkeypatch.setattr("extract.connect_to_db", start_empty_conn)
     monkeypatch.setattr("load.connect_to_db", start_empty_conn)
     monkeypatch.setattr("load.close_db_connection", close_empty_conn)
-    monkeypatch.setattr("src.extract.close_db_connection", close_empty_conn)
-    monkeypatch.setenv("load.s3_client", test_tf_bucket)
+    monkeypatch.setattr("extract.close_db_connection", close_empty_conn)
 
 
-@pytest.fixture(autouse=True)
-def dummy_df(monkeypatch):
-    def generate_dummy_df(*args, **kwargs):
-        df = pl.DataFrame(
-            {
-                "user_id": [101, 102, 103, 104, 105],
-                "is_premium": [True, False, True, False, True],
-                "page_views": [25, 8, 33, 5, 41],
-                "click_rate": [0.12, 0.05, 0.20, 0.03, 0.18],
-            }
-        )
-        return df
+# @pytest.fixture(autouse=True)
+# def dummy_df(monkeypatch):
+#     def generate_dummy_df(*args, **kwargs):
+#         df = pl.DataFrame(
+#             {
+#                 "user_id": [101, 102, 103, 104, 105],
+#                 "is_premium": [True, False, True, False, True],
+#                 "page_views": [25, 8, 33, 5, 41],
+#                 "click_rate": [0.12, 0.05, 0.20, 0.03, 0.18],
+#             }
+#         )
+#         return df
 
-    monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
+#     monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
 
 
 @pytest.fixture(scope="function")
@@ -82,6 +77,7 @@ def test_tf_bucket(test_s3):
             "Location": {"Type": "AvailabilityZone", "Name": "string"},
         },
     )
+
     return test_s3
 
 
@@ -120,8 +116,6 @@ def upload_secret(test_secret_manager):
         ),
     )
 
-
-
 @pytest.fixture(autouse=True)
 def extract_df_dummy(*args, **kwargs):
     """
@@ -132,18 +126,38 @@ def extract_df_dummy(*args, **kwargs):
 
     sodf = pl.DataFrame(
         {
-            "sales_order_id": [1],
-            "created_at": [1],
-            "last_updated": [1],
-            "design_id": [1],
-            "staff_id": [1],
-            "counterparty_id": [1],
-            "units_sold": [1],
-            "unit_price": [1],
-            "currency_id": [1],
-            "agreed_delivery_date": [1],
-            "agreed_payment_date": [1],
-            "agreed_delivery_location_id": [1],
+            "sales_order_id": [1, 2, 3, 4],
+            "created_at": [
+                datetime(2024, 1, 1, 0, 0, 0),
+                datetime(2024, 2, 2, 0, 0, 0),
+                datetime(2024, 3, 3, 0, 0, 0),
+                datetime(2024, 4, 4, 0, 0, 0),
+            ],
+            "last_updated": [
+                datetime(2024, 1, 1, 0, 0, 0),
+                datetime(2024, 2, 2, 0, 0, 0),
+                datetime(2024, 3, 3, 0, 0, 0),
+                datetime(2024, 4, 4, 0, 0, 0),
+            ],
+            "design_id": [1, 2, 3, 4],
+            "staff_id": [1, 2, 3, 4],
+            "counterparty_id": [1, 2, 3, 4],
+            "units_sold": [1, 2, 3, 4],
+            "unit_price": [1, 2, 3, 4],
+            "currency_id": [1, 2, 3, 4],
+            "agreed_delivery_date": [
+                date(2024, 1, 1),
+                date(2024, 2, 2),
+                date(2024, 3, 3),
+                date(2024, 4, 4),
+            ],
+            "agreed_payment_date": [
+                date(2024, 1, 1),
+                date(2024, 2, 2),
+                date(2024, 3, 3),
+                date(2024, 4, 4),
+            ],
+            "agreed_delivery_location_id": [1, 2, 3, 4],
         }
     )
 
@@ -160,60 +174,60 @@ def extract_df_dummy(*args, **kwargs):
 
     cdf = pl.DataFrame(
         {
-            "currency_id": [1],
-            "currency_code": [1],
-            "created_at": [1],
-            "last_updated": [1],
+            "currency_id": [1, 2, 3, 4],
+            "currency_code": ["GBP", "JPY", "CNY", "EUR"],
+            "created_at": [1, 2, 3, 4],
+            "last_updated": [1, 2, 3, 4],
         }
     )
 
     sdf = pl.DataFrame(
         {
-            "staff_id": [1],
-            "first_name": [1],
-            "last_name": [1],
-            "department_id": [1],
-            "email_address": [1],
-            "created_at": [1],
-            "last_updated": [1],
+            "staff_id": [1, 2, 3, 4],
+            "first_name": [1, 2, 3, 4],
+            "last_name": [1, 2, 3, 4],
+            "department_id": [1, 2, 3, 4],
+            "email_address": [1, 2, 3, 4],
+            "created_at": [1, 2, 3, 4],
+            "last_updated": [1, 2, 3, 4],
         }
     )
 
     cpdf = pl.DataFrame(
         {
-            "counterparty_id": [1],
-            "counterparty_legal_name": [1],
-            "legal_address_id": [1],
-            "commercial_contact": [1],
-            "delivery_contact": [1],
-            "created_at": [1],
-            "last_updated": [1],
+            "counterparty_id": [1, 2, 3, 4],
+            "counterparty_legal_name": [1, 2, 3, 4],
+            "legal_address_id": [1, 2, 3, 4],
+            "commercial_contact": [1, 2, 3, 4],
+            "delivery_contact": [1, 2, 3, 4],
+            "created_at": [1, 2, 3, 4],
+            "last_updated": [1, 2, 3, 4],
         }
     )
 
     adf = pl.DataFrame(
         {
-            " address_id": [1],
-            "address_line_1": [1],
-            "address_line_2": [1],
-            "district ": [1],
-            "city": [1],
-            "postal_code": [1],
-            "country": [1],
-            "phone": [1],
-            "created_at": [1],
-            "last_updated": [1],
+            "address_id": [1, 2, 3, 4],
+            "address_line_1": [1, 2, 3, 4],
+            "address_line_2": [1, 2, 3, 4],
+            "district": [1, 2, 3, 4],
+            "city": [1, 2, 3, 4],
+            "postal_code": [1, 2, 3, 4],
+            "country": [1, 2, 3, 4],
+            "phone": [1, 2, 3, 4],
+            "created_at": [1, 2, 3, 4],
+            "last_updated": [1, 2, 3, 4],
         }
     )
 
     dpdf = pl.DataFrame(
         {
-            "department_id": [1],
-            "department_name": [1],
-            "location": [1],
-            "manager": [1],
-            "created_at": [1],
-            "last_updated": [1],
+            "department_id": [1, 2, 3, 4],
+            "department_name": [1, 2, 3, 4],
+            "location": [1, 2, 3, 4],
+            "manager": [1, 2, 3, 4],
+            "created_at": [1, 2, 3, 4],
+            "last_updated": [1, 2, 3, 4],
         }
     )
 
@@ -256,7 +270,7 @@ def extract_df_dummy(*args, **kwargs):
             "paid": [1],
             "payment_date": [1],
             "company_ac_number": [1],
-            "counterparty_ac_number": [1],
+            "counterparty_ac_number": [1]
         }
     )
 
@@ -267,7 +281,7 @@ def extract_df_dummy(*args, **kwargs):
             "sales_order_id": [1],
             "purchase_order_id": [1],
             "created_at": [1],
-            "last_updated": [1],
+            "last_updated": [1]
         }
     )
 
@@ -279,7 +293,7 @@ def extract_df_dummy(*args, **kwargs):
         "counterparty": cpdf,
         "address": adf,
         "department": dpdf,
-        "purchase": pdf,
+        "purchase_order": pdf,
         "payment_type": ptdf,
         "payment": pymdf,
         "transaction": tdf,
@@ -288,3 +302,22 @@ def extract_df_dummy(*args, **kwargs):
     return full_mirror_df
 
 
+@pytest.fixture(autouse=True)
+def dummy_df(monkeypatch, extract_df_dummy):
+    df_list = [
+        extract_df_dummy["counterparty"],
+        extract_df_dummy["currency"],
+        extract_df_dummy["department"],
+        extract_df_dummy["design"],
+        extract_df_dummy["staff"],
+        extract_df_dummy["sales_order"],
+        extract_df_dummy["address"],
+        extract_df_dummy["payment"],
+        extract_df_dummy["purchase_order"],
+        extract_df_dummy["payment_type"],
+        extract_df_dummy["transaction"],
+    ]
+
+    dfs = iter(df_list)
+
+    monkeypatch.setattr("src.extract.pl.read_database", lambda *_: next(dfs))

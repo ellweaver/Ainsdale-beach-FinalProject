@@ -1,15 +1,17 @@
 import boto3
 import logging
 from io import BytesIO
-from src.utils import upload_file, download_file
+from utils import upload_file, download_file
 import polars as pl
+import pyarrow as pa
+from babel.numbers import get_currency_name
+from datetime import date
 
 
 def lambda_handler(event, context):
     s3_client = boto3.client("s3")
     response = transform_data(s3_client, event["key"], event["batch_id"])
     return response
-
 
 def transform_data(
     s3_client,
@@ -43,7 +45,7 @@ def transform_data(
         "payment",
         "purchase_order",
         "payment_type",
-        "transaction",
+        "transaction"
     ]
 
     df_dict = {
@@ -57,7 +59,7 @@ def transform_data(
         "payment": "",
         "purchase_order": "",
         "payment_type": "",
-        "transaction": "",
+        "transaction": ""
     }
 
     processed_dict = {
@@ -72,7 +74,6 @@ def transform_data(
 
     try:
         for table in table_name_list:
-            print(f"{key}{batch_id}_{table}.csv")
 
             file = download_file(
                 s3_client, sourcebucket, f"{key}{batch_id}_{table}.csv"
@@ -83,6 +84,7 @@ def transform_data(
         processed_dict["fact_sales_order"] = make_fact_sales_order(
             df_dict["sales_order"]
         )
+
         processed_dict["dim_date"] = make_dim_date()
         processed_dict["dim_staff"] = make_dim_staff(
             df_dict["staff"], df_dict["department"]
@@ -104,7 +106,6 @@ def transform_data(
         logger.error(e)
         return {"status": "Failure", "code": e}
 
-
 def make_fact_sales_order(sales_order_table):
     """creates a fact table centred on sales orders: star schema
 
@@ -114,8 +115,37 @@ def make_fact_sales_order(sales_order_table):
     Returns:
         dataframe: a newly transformed dataframe for sales orders
     """
-    return sales_order_table
 
+    fact_sales_order = sales_order_table.with_row_index("sales_record_id", offset=1)
+    fact_sales_order = fact_sales_order.with_columns(
+        (pl.col("created_at").dt.date()).alias("created_date"),
+        (pl.col("created_at").dt.time()).alias("created_time"),
+        (pl.col("last_updated").dt.date()).alias("last_updated_date"),
+        (pl.col("last_updated").dt.time()).alias("last_updated_time")
+        )
+    fact_sales_order =fact_sales_order.rename({"staff_id":"sales_staff_id"})
+
+
+    fact_sales_order = fact_sales_order.select(
+        [
+            "sales_record_id",
+            "sales_order_id",
+            "created_date",
+            "created_time",
+            "last_updated_date",
+            "last_updated_time",
+            "sales_staff_id",
+            "counterparty_id",
+            "units_sold",
+            "unit_price",
+            "currency_id",
+            "design_id",
+            "agreed_payment_date",
+            "agreed_delivery_date",
+            "agreed_delivery_location_id",
+        ])
+
+    return fact_sales_order
 
 def make_dim_date():
     """creates a dim table centred on dates: star schema
@@ -123,7 +153,29 @@ def make_dim_date():
     Returns:
         dataframe: a newly transformed dataframe for dates
     """
-    pass
+    start_date = date(1960, 1, 1)
+    end_date = date(2060, 1, 1)
+    interval = "1d"
+
+    dim_date = pl.DataFrame(
+        {
+            "date_id": pl.date_range(
+                start=start_date, end=end_date, interval=interval, eager=True
+            )
+        }
+    )
+
+    dim_date = dim_date.with_columns(
+        (pl.col("date_id").dt.year()).alias("year"),
+        (pl.col("date_id").dt.month()).alias("month"),
+        (pl.col("date_id").dt.day()).alias("day"),
+        (pl.col("date_id").dt.weekday()).alias("day_of_week"),
+        (pl.col("date_id").dt.strftime("%A")).alias("day_name"),
+        (pl.col("date_id").dt.strftime("%B")).alias("month_name"),
+        (pl.col("date_id").dt.quarter()).alias("quarter"),
+    )
+
+    return dim_date
 
 
 def make_dim_staff(staff_table, department_table):
@@ -136,7 +188,19 @@ def make_dim_staff(staff_table, department_table):
         dataframe: a newly transformed dataframe for staff details
         , location and email address
     """
-    pass
+    dim_staff = staff_table.join(department_table, on="department_id")
+    dim_staff = dim_staff.select(
+        [
+            "staff_id",
+            "first_name",
+            "last_name",
+            "department_name",
+            "location",
+            "email_address",
+        ]
+    )
+
+    return dim_staff
 
 
 def make_dim_location(address_table):
@@ -148,7 +212,10 @@ def make_dim_location(address_table):
     Returns:
         dataframe: a newly transformed dataframe for customer details (address)
     """
-    pass
+    dim_location = address_table.drop(["created_at", "last_updated"])
+    dim_location = dim_location.rename({"address_id": "location_id"})
+
+    return dim_location
 
 
 def make_dim_currency(currency_table):
@@ -160,19 +227,27 @@ def make_dim_currency(currency_table):
     Returns:
         dataframe: a newly transformed dataframe for purchase currency
     """
-    pass
+    dim_currency = currency_table.drop(["created_at", "last_updated"])
+    columns = pl.col("currency_code")
+    dim_currency = dim_currency.with_columns(
+        pl.col("currency_code").map_elements(get_currency_name).alias("currency_name")
+    )
+
+    return dim_currency
 
 
 def make_dim_design(design_table):
     """creates a dim table centred on product design: star schema
 
     Args:
-        desgin_table (dataframe): ingested table
+        design_table (dataframe): ingested table
 
     Returns:
         dataframe: a newly transformed dataframe for product designs
     """
-    pass
+    dim_design = design_table.drop(["created_at", "last_updated"])
+
+    return dim_design
 
 
 def make_dim_counterparty(counterparty_table, address_table):
@@ -184,4 +259,30 @@ def make_dim_counterparty(counterparty_table, address_table):
     Returns:
         dataframe: a newly transformed dataframe for counterparties
     """
-    pass
+    dim_counterparty = counterparty_table.join(
+        address_table, left_on="legal_address_id", right_on="address_id"
+    )
+    dim_counterparty = dim_counterparty.rename(
+        {
+            "address_line_1": "counterparty_legal_address_line_1",
+            "address_line_2": "counterparty_legal_address_line_2",
+            "district": "counterparty_legal_district",
+            "city": "counterparty_legal_city",
+            "postal_code": "counterparty_legal_postal_code",
+            "country": "counterparty_legal_country",
+            "phone": "counterparty_legal_phone_number",
+        }
+    )
+    dim_counterparty = dim_counterparty.drop(
+        [
+            "legal_address_id",
+            "commercial_contact",
+            "delivery_contact",
+            "created_at",
+            "last_updated",
+            "created_at_right",
+            "last_updated_right",
+        ]
+    )
+
+    return dim_counterparty

@@ -2,8 +2,8 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 from io import BytesIO
-from src.db_utils import connect_to_db, close_db_connection
-from src.utils import upload_file
+from db_utils import connect_to_db, close_db_connection
+from utils import upload_file
 import polars as pl
 
 from datetime import datetime
