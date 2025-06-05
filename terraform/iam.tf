@@ -159,7 +159,9 @@ data "aws_iam_policy_document" "lambda_access_policy" {
         actions = [
         "lambda:InvokeFunction"
         ]
-        resources = ["arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:function:extract_lambda_function:*"]
+        resources = ["arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:function:extract_lambda_function:*",
+        "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:function:transform_lambda_function:*",
+        "arn:aws:lambda:eu-west-2:${data.aws_caller_identity.current.account_id}:function:load_lambda_function:*"]
     }
 }
 
