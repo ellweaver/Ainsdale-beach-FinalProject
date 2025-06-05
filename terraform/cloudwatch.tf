@@ -21,4 +21,5 @@ resource "aws_cloudwatch_metric_alarm" "ainsdale_beach_alarm" {
   alarm_actions = ["arn:aws:sns:eu-west-2:${data.aws_caller_identity.current.account_id}:ainsdale_beach_2"]
 
   ok_actions = ["arn:aws:sns:eu-west-2:${data.aws_caller_identity.current.account_id}:ainsdale_beach_2"]
+ depends_on = [ aws_lambda_function.extract_lambda,aws_lambda_function.transform_lambda,aws_lambda_function.load_lambda ]
 }
