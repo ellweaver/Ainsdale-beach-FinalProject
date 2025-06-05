@@ -1,11 +1,10 @@
 import boto3
 import polars as pl
-
 import logging
 from db_utils import connect_to_db, close_db_connection
-from utils import download_file, upload_file
-import pyarrow
-from botocore.exceptions import ClientError
+from utils import download_file
+
+
 
 '''
 1. Needs to download the latest data from the transform bucket
@@ -26,8 +25,10 @@ def lambda_handler(event, context):
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-def load_data(s3_client,key,batch_id,sourcebucket="ainsdale_transform_bucket"):
-    conn = connect_to_db("toteys_db_warehouse_credentials")
+def load_data(s3_client,key,batch_id,sourcebucket="ainsdale_transform_bucket",test=False):
+    conn=None
+    if not test:
+        conn = connect_to_db("toteys_db_warehouse_credentials")
 
     processed_dict = {
         "fact_sales_order": "",
@@ -48,8 +49,10 @@ def load_data(s3_client,key,batch_id,sourcebucket="ainsdale_transform_bucket"):
                 with open (file["body"].read(), "r") as parq:
                  df = pl.read_parquet(parq)
             else: 
-                raise ClientError(operation_name="test",error_response={'Error':{'Error':f"{table} file not found",'Code':404, 'Message':f"{table} file not found"}})
-            test_variable=df.write_database(table_name=table, connection=conn)
+                raise Exception ('An error occurred (404) when calling the test operation: fact_sales_order file not found')
+                #raise ClientError(operation_name="test",error_response={'Error':{'Error':f"{table} file not found",'Code':404, 'Message':f"{table} file not found"}})
+            if not test:
+                df.write_database(table_name=table, connection=conn)
             logger.info(f"{table} successfully uploaded to data warehouse")
         logger.info("All tables successfully uploaded to data warehouse")
         return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
@@ -57,6 +60,10 @@ def load_data(s3_client,key,batch_id,sourcebucket="ainsdale_transform_bucket"):
     except Exception as e:
         logger.error(str(e))
         return {"status": "Failure", "code": str(e)}
+    
+    finally:
+        if conn:
+            close_db_connection(conn)
 
 
             

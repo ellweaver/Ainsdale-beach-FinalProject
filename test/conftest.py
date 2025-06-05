@@ -31,10 +31,9 @@ def database_connect(monkeypatch):
 
     monkeypatch.setattr("src.extract.connect_to_db", start_empty_conn)
     monkeypatch.setattr("load.connect_to_db", start_empty_conn)
-    #monkeypatch.setattr("load.conn", start_empty_conn)
-    monkeypatch.setv("load.test_variable", start_empty_conn)
     monkeypatch.setattr("load.close_db_connection", close_empty_conn)
     monkeypatch.setattr("src.extract.close_db_connection", close_empty_conn)
+    monkeypatch.setenv("load.s3_client", test_tf_bucket)
 
 
 @pytest.fixture(autouse=True)
