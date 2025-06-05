@@ -14,6 +14,7 @@ import logging
 from moto import mock_aws
 from freezegun import freeze_time
 from datetime import date, time
+from utils import upload_file
 
 
 class TestTransformData:
@@ -28,8 +29,8 @@ class TestTransformData:
             test_s3,
             key,
             batch_id,
-            sourcebucket="test_bucket",
-            destinationbucket="test_tf_bucket",
+            source_bucket="test_bucket",
+            destination_bucket="test_tf_bucket",
         )
         assert response == {
             "status": "Success",
@@ -43,17 +44,30 @@ class TestTransformData:
         key = "data/2025/5/29/2025-05-29_00:00:00/"
         batch_id = "2025-05-29_00:00:00"
         extract_data(s3_client=test_s3, bucket="test_bucket")
+
         transform_data(
             test_s3,
             key,
             batch_id,
-            sourcebucket="test_bucket",
-            destinationbucket="test_tf_bucket",
-        )
+            source_bucket="test_bucket",
+            destination_bucket="test_tf_bucket",
+            )
+
+        #TEST
+        # upload_file(
+        #         test_s3,
+        #         file="star_sales_schema.md",
+        #         bucket_name="test_tf_bucket",
+        #         key=f"please_work"
+        #     )
+
+        # lister = test_s3.list_objects_v2(Bucket="test_bucket")
         listing = test_s3.list_objects_v2(Bucket="test_tf_bucket")
+        # print(lister)
+        print(listing)
         assert (
             listing["Contents"][0]["Key"]
-            == "data/2025/5/29/2025-05-29_00:00:00/2025-05-29_00:00:00_sales_order.parquet"
+            == "data/2025/5/29/2025-05-29_00:00:00/2025-05-29_00:00:00_fact_sales_order.parquet"
         )
 
 
