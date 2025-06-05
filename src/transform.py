@@ -4,7 +4,6 @@ from io import BytesIO
 from utils import upload_file, download_file
 import polars as pl
 import pyarrow as pa
-from babel.numbers import get_currency_name
 from datetime import date
 import mpu 
 
@@ -110,7 +109,7 @@ def transform_data(
             )
             
         # listing = s3_client.list_objects_v2(Bucket=destination_bucket)
-        # print(listing)
+        # print(listing["Contents"][0]["Key"])
 
         return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
 

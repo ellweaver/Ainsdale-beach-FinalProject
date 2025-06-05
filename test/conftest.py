@@ -77,7 +77,7 @@ def test_tf_bucket(test_s3):
         },
     )
 
-    return test_s3
+    yield test_s3
     
 
 
