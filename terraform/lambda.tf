@@ -20,30 +20,12 @@ data "archive_file" "transform_py" {
   output_path      = "${path.module}/../terraform/data/transform.zip"
 }
 
-resource "local_file" "copy_utils"{
-    filename = "${path.module}/../terraform/data/lambda_utils_layer/python/utils.py"
-    content = file("${path.module}/../src/utils.py")
-  }
-
-resource "local_file" "copy_db_utils"{
-    filename = "${path.module}/../terraform/data/lambda_db_utils_layer/python/db_utils.py"
-    content = file("${path.module}/../src/db_utils.py")
-  }
-
 data "archive_file" "python_utils_layer" {
   type             = "zip"
   output_file_mode = "0666"
-  source_dir       = "${path.module}/../terraform/data/lambda_utils_layer"
-  output_path      = "${path.module}/../terraform/data/utils_layer.zip"
+  source_dir       = "${path.module}/data/lambda_utils_layer"
+  output_path      = "${path.module}/../terraform/data/lambda_utils_layer.zip"
 }
-
-data "archive_file" "python_db_utils_layer" {
-  type             = "zip"
-  output_file_mode = "0666"
-  source_dir       = "${path.module}/../terraform/data/lambda_db_utils_layer"
-  output_path      = "${path.module}/../terraform/data/db_utils_layer.zip"
-}
-
 
 
 resource "aws_s3_object" "extract_file_upload" {
@@ -84,22 +66,6 @@ resource "aws_lambda_layer_version" "python_utils_layer" {
 
 }
 
-resource "aws_s3_object" "python_db_utils_layer_upload" {
-  bucket = aws_s3_bucket.python_bucket.bucket
-  key    = "python_db_utils"
-  source = data.archive_file.python_db_utils_layer.output_path
-  etag   = filemd5(data.archive_file.python_db_utils_layer.output_path)
-  depends_on = [ data.archive_file.python_db_utils_layer ]
-
-}
-
-resource "aws_lambda_layer_version" "python_db_utils_layer" {
-  s3_bucket  = aws_s3_bucket.python_bucket.bucket
-  s3_key     = aws_s3_object.python_db_utils_layer_upload.key
-  layer_name = "python_db_utils"
-
-}
-
 resource "aws_lambda_layer_version" "python_pg8000_layer" {
   s3_bucket  = "ainsdale-layers-files"
   s3_key     = "lambda_pg8000_layer.zip"
@@ -121,6 +87,13 @@ resource "aws_lambda_layer_version" "pyarrow_layer" {
 
 }
 
+resource "aws_lambda_layer_version" "babel_layer" {
+  s3_bucket  = "ainsdale-layers-files"
+  s3_key     = "babel_layer.zip"
+  layer_name = "python_babel"
+
+}
+
 
 resource "aws_lambda_function" "extract_lambda" {
   function_name = "extract_lambda_function"
@@ -135,7 +108,6 @@ resource "aws_lambda_function" "extract_lambda" {
     aws_lambda_layer_version.python_utils_layer.arn,
     aws_lambda_layer_version.python_pg8000_layer.arn,
     aws_lambda_layer_version.python_polars_layer.arn,
-    aws_lambda_layer_version.python_db_utils_layer.arn
   ]
 
   timeout = 60
@@ -160,7 +132,8 @@ resource "aws_lambda_function" "transform_lambda" {
   layers = [
     aws_lambda_layer_version.python_utils_layer.arn,
     aws_lambda_layer_version.python_polars_layer.arn,
-    aws_lambda_layer_version.pyarrow_layer.arn
+    aws_lambda_layer_version.pyarrow_layer.arn,
+    aws_lambda_layer_version.babel_layer.arn
   ]
 
   timeout = 60
@@ -185,8 +158,7 @@ resource "aws_lambda_function" "load_lambda" {
   layers = [
     aws_lambda_layer_version.python_utils_layer.arn,
     aws_lambda_layer_version.python_polars_layer.arn,
-    aws_lambda_layer_version.pyarrow_layer.arn,
-    aws_lambda_layer_version.python_db_utils_layer.arn
+    aws_lambda_layer_version.pyarrow_layer.arn
   ]
 
   timeout = 60
