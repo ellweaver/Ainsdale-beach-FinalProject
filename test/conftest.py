@@ -66,7 +66,6 @@ def test_bucket(test_s3):
         },
     )
 
-
 @pytest.fixture(scope="function")
 def test_tf_bucket(test_s3):
     """Creates mock_bucket for client"""
@@ -78,7 +77,8 @@ def test_tf_bucket(test_s3):
         },
     )
 
-    return test_s3
+    yield test_s3
+    
 
 
 @pytest.fixture(scope="function")

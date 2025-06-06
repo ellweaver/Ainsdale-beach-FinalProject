@@ -14,22 +14,23 @@ import logging
 from moto import mock_aws
 from freezegun import freeze_time
 from datetime import date, time
+from utils import upload_file
 
 
 class TestTransformData:
     @freeze_time("29-05-2025")
-    @pytest.mark.skip
     @pytest.mark.it("Transform data returns correct response")
     def test_transform_response(self, test_s3, test_bucket, test_tf_bucket):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
         batch_id = "2025-05-29_00:00:00"
         extract_data(s3_client=test_s3, bucket="test_bucket")
+
         response = transform_data(
             test_s3,
             key,
             batch_id,
-            sourcebucket="test_bucket",
-            destinationbucket="test_tf_bucket",
+            source_bucket="test_bucket",
+            destination_bucket="test_tf_bucket",
         )
         assert response == {
             "status": "Success",
@@ -38,25 +39,27 @@ class TestTransformData:
             "batch_id": batch_id,
         }
 
-    @pytest.mark.skip
+    @freeze_time("29-05-2025")
     @pytest.mark.it("Transform data uploads correctly to S3")
     def test_transform_upload(self, test_s3, test_bucket, test_tf_bucket):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
         batch_id = "2025-05-29_00:00:00"
         extract_data(s3_client=test_s3, bucket="test_bucket")
+
         transform_data(
             test_s3,
             key,
             batch_id,
-            sourcebucket="test_bucket",
-            destinationbucket="test_tf_bucket",
-        )
-        listing = test_s3.list_objects_v2(Bucket="test_tf_bucket")
-        assert (
-            listing["Contents"][0]["Key"]
-            == "data/2025/5/29/2025-05-29_00:00:00/2025-05-29_00:00:00_sales_order.parquet"
-        )
+            source_bucket="test_bucket",
+            destination_bucket="test_tf_bucket",
+            )
+        
 
+        listing = test_s3.list_objects_v2(Bucket="test_tf_bucket")
+        assert listing["Contents"][0]["Key"] == "data/2025/5/29/2025-05-29_00:00:00/2025-05-29_00:00:00_dim_counterparty.parquet"
+       
+        
+    
 
 class TestMakeFactSalesOrder:
     @pytest.mark.it("Test make facts sales doesnt manipulate inputs")
@@ -243,10 +246,10 @@ class TestMakeDimCurrency:
         df = extract_df_dummy["currency"]
         dim_currency = make_dim_currency(df)
         data = dim_currency.get_column("currency_name")
-        assert "British Pound" in data
+        assert "Pound Sterling" in data
         assert "Euro" in data
-        assert "Japanese Yen" in data
-        assert "Chinese Yuan" in data
+        assert "Yen" in data
+        assert "Yuan Renminbi" in data
 
 
 class TestMakeDimDesign:
@@ -323,3 +326,46 @@ class TestMakeDimCounterparty:
             "counterparty_legal_phone_number",
         ]
         assert row_data == (2, 2, 2, 2, 2, 2, 2, 2, 2)
+
+class TestLogging:
+    @freeze_time("29-05-2025")
+    @pytest.mark.it('transform function produces correct info logs')
+    def test_transform_info_logs(self, test_s3, test_bucket, test_tf_bucket, extract_df_dummy,caplog):
+        key = "data/2025/5/29/2025-05-29_00:00:00/"
+        batch_id = "2025-05-29_00:00:00"
+        extract_data(s3_client=test_s3, bucket="test_bucket")
+        table_names = {
+        "fact_sales_order": "2025-05-29_00:00:00_fact_sales_order.parquet successfully uploaded to processed bucket",
+        "dim_date": "2025-05-29_00:00:00_dim_date.parquet successfully uploaded to processed bucket",
+        "dim_staff": "2025-05-29_00:00:00_dim_staff.parquet successfully uploaded to processed bucket",
+        "dim_location": "2025-05-29_00:00:00_dim_location.parquet successfully uploaded to processed bucket",
+        "dim_design": "2025-05-29_00:00:00_dim_design.parquet successfully uploaded to processed bucke",
+        "dim_currency": "2025-05-29_00:00:00_dim_currency.parquet successfully uploaded to processed bucket",
+        "dim_counterparty": "2025-05-29_00:00:00_dim_counterparty.parquet successfully uploaded to processed bucket",
+        "all_tables": "all tables successfully uploaded"
+        }
+        with caplog.at_level(logging.INFO):
+            transform_data(
+            test_s3,
+            key,
+            batch_id,
+            source_bucket="test_bucket",
+            destination_bucket="test_tf_bucket",
+            )
+            for text in table_names.values():
+                assert text in caplog.text
+        
+    @pytest.mark.it('transform function creates correect error logs')
+    def test_transform_error_log(self,test_s3, test_bucket, test_tf_bucket, extract_df_dummy,caplog):
+        key = "data/2025/5/29/2025-05-29_00:00:00/"
+        batch_id = "2025-05-29_00:00:00"
+        extract_data(s3_client=test_s3, bucket="test_bucket")
+        with caplog.at_level(logging.ERROR):
+            transform_data(
+            test_s3,
+            key,
+            batch_id,
+            source_bucket="test_bucket",
+            destination_bucket="test_tf_bucket",
+            )
+            assert "{'status': 'Failure', 'message': KeyError('body')}" in caplog.text
