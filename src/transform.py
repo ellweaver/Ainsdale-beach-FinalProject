@@ -8,12 +8,11 @@ from datetime import date
 from utils import currency_code_converter
 
 
-
-
 def lambda_handler(event, context):
     s3_client = boto3.client("s3")
     response = transform_data(s3_client, event["key"], event["batch_id"])
     return response
+
 
 def transform_data(
     s3_client,
@@ -48,7 +47,7 @@ def transform_data(
         "payment",
         "purchase_order",
         "payment_type",
-        "transaction"
+        "transaction",
     ]
 
     df_dict = {
@@ -62,7 +61,7 @@ def transform_data(
         "payment": "",
         "purchase_order": "",
         "payment_type": "",
-        "transaction": ""
+        "transaction": "",
     }
 
     processed_dict = {
@@ -102,20 +101,22 @@ def transform_data(
             out_buffer = BytesIO()
             value.write_parquet(out_buffer)
 
-            
             upload_file(
                 s3_client,
                 file=out_buffer.getvalue(),
                 bucket_name=destination_bucket,
-                key=f"{key}{batch_id}_{table}.parquet"
+                key=f"{key}{batch_id}_{table}.parquet",
             )
-            logger.info(f"{batch_id}_{table}.parquet successfully uploaded to processed bucket")
+            logger.info(
+                f"{batch_id}_{table}.parquet successfully uploaded to processed bucket"
+            )
         logger.info("all tables successfully uploaded")
         return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
 
     except Exception as e:
         logger.error({"status": "Failure", "message": e})
         return {"status": "Failure", "message": e}
+
 
 def make_fact_sales_order(sales_order_table):
     """creates a fact table centred on sales orders: star schema
@@ -132,10 +133,9 @@ def make_fact_sales_order(sales_order_table):
         (pl.col("created_at").dt.date()).alias("created_date"),
         (pl.col("created_at").dt.time()).alias("created_time"),
         (pl.col("last_updated").dt.date()).alias("last_updated_date"),
-        (pl.col("last_updated").dt.time()).alias("last_updated_time")
-        )
-    fact_sales_order =fact_sales_order.rename({"staff_id":"sales_staff_id"})
-
+        (pl.col("last_updated").dt.time()).alias("last_updated_time"),
+    )
+    fact_sales_order = fact_sales_order.rename({"staff_id": "sales_staff_id"})
 
     fact_sales_order = fact_sales_order.select(
         [
@@ -154,9 +154,11 @@ def make_fact_sales_order(sales_order_table):
             "agreed_payment_date",
             "agreed_delivery_date",
             "agreed_delivery_location_id",
-        ])
+        ]
+    )
 
     return fact_sales_order
+
 
 def make_dim_date():
     """creates a dim table centred on dates: star schema
@@ -242,9 +244,11 @@ def make_dim_currency(currency_table):
     dim_currency = currency_table.drop(["created_at", "last_updated"])
     columns = pl.col("currency_code")
     dim_currency = dim_currency.with_columns(
-        pl.col("currency_code").map_elements(currency_code_converter, return_dtype=str).alias("currency_name")
+        pl.col("currency_code")
+        .map_elements(currency_code_converter, return_dtype=str)
+        .alias("currency_name")
     )
-    
+
     return dim_currency
 
 

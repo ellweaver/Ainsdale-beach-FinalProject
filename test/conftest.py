@@ -66,6 +66,7 @@ def test_bucket(test_s3):
         },
     )
 
+
 @pytest.fixture(scope="function")
 def test_tf_bucket(test_s3):
     """Creates mock_bucket for client"""
@@ -78,7 +79,6 @@ def test_tf_bucket(test_s3):
     )
 
     yield test_s3
-    
 
 
 @pytest.fixture(scope="function")
@@ -115,6 +115,7 @@ def upload_secret(test_secret_manager):
             }
         ),
     )
+
 
 @pytest.fixture(autouse=True)
 def extract_df_dummy(*args, **kwargs):
@@ -177,7 +178,7 @@ def extract_df_dummy(*args, **kwargs):
             "currency_id": [1, 2, 3, 4, 5, 6, 7, 8],
             "currency_code": ["GBP", "USD", "EUR", "EUR", "PLN", "CAD", "AUD", "CNY"],
             "created_at": [1, 2, 3, 4, 5, 6, 7, 8],
-            "last_updated": [1, 2, 3, 4, 5, 6, 7, 8]
+            "last_updated": [1, 2, 3, 4, 5, 6, 7, 8],
         }
     )
 
@@ -270,7 +271,7 @@ def extract_df_dummy(*args, **kwargs):
             "paid": [1],
             "payment_date": [1],
             "company_ac_number": [1],
-            "counterparty_ac_number": [1]
+            "counterparty_ac_number": [1],
         }
     )
 
@@ -281,7 +282,7 @@ def extract_df_dummy(*args, **kwargs):
             "sales_order_id": [1],
             "purchase_order_id": [1],
             "created_at": [1],
-            "last_updated": [1]
+            "last_updated": [1],
         }
     )
 
@@ -321,3 +322,18 @@ def dummy_df(monkeypatch, extract_df_dummy):
     dfs = iter(df_list)
 
     monkeypatch.setattr("src.extract.pl.read_database", lambda *_: next(dfs))
+
+@pytest.fixture()
+def test_lambdas(monkeypatch):
+    def test_lambda(*args, **kwargs):
+        return "lambdahandler is used correctly"
+
+    monkeypatch.setattr("extract.extract_data", test_lambda)
+    #monkeypatch.setattr("transform.transform_data", test_lambda)
+
+@pytest.fixture()
+def test_transform_lambda(monkeypatch):
+    def test_lambda(*args, **kwargs):
+        return "lambdahandler is used correctly"
+
+    monkeypatch.setattr("transform.transform_data", test_lambda)

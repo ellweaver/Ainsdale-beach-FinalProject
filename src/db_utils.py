@@ -24,6 +24,7 @@ def get_db_secret(client=None):
     secret = get_secret_value_response["SecretString"]
     return secret
 
+
 def get_db_warehouse_secret(client=None):
 
     secret_name = "toteys_db_warehouse_credentials"
@@ -46,11 +47,11 @@ def get_db_warehouse_secret(client=None):
 
 
 def connect_to_db(secret_name="toteys_db_credentials"):
-    if secret_name=="toteys_db_credentials":
+    if secret_name == "toteys_db_credentials":
         secrets = json.loads(get_db_secret())
-    elif secret_name =="toteys_db_warehouse_credentials":
+    elif secret_name == "toteys_db_warehouse_credentials":
         secrets = json.loads(get_db_warehouse_secret())
-        
+
     return dbapi.connect(
         user=secrets["user"],
         password=secrets["password"],

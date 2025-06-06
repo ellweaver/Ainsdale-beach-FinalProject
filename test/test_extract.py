@@ -1,15 +1,11 @@
-from extract import extract_data
+from extract import extract_data, lambda_handler
 from unittest.mock import Mock, patch
-import sys
 import pytest
 import logging
-import os
-import boto3
-from moto import mock_aws
 from datetime import datetime
-
 from freezegun import freeze_time
 from pg8000 import dbapi
+
 
 
 class TestExtractData:
@@ -74,3 +70,11 @@ class TestExtractDataLogging:
             extract_data(test_s3, bucket=["fake-bucket", "fake-bucket"])
 
         assert "expected string or bytes-like object, got 'list'" in caplog.text
+
+class TestLambdaHandler:
+    @pytest.mark.it("test lambda hander invokes extract data ")
+    def test_lambda_handler_invokes_extract_data(self,test_lambdas):
+        test_event = {}
+        test_context = ""
+        response=lambda_handler(test_event,test_context)
+        assert response == "lambdahandler is used correctly"
