@@ -1,6 +1,6 @@
 import pytest
 from moto import mock_aws
-from src.utils import upload_file, download_file
+from src.utils import upload_file, download_file, currency_code_converter
 import io
 
 
@@ -50,3 +50,14 @@ class TestDownloadFile:
         assert isinstance(response, dict)
         assert response["status"] == "Failed"
         assert response["code"] == "NoSuchKey"
+
+    class TestCurrencyCodeConverter:
+        @pytest.mark.it('test currency converter converts usd correctly')
+        def test_currency_converter_converts_usd(self):
+            assert currency_code_converter("usd")=="US Dollar"
+
+        
+        @pytest.mark.it('test currency converter returns correct response to unavailable currency')
+        def test_currency_converter_returns_correct_response(self):
+            assert currency_code_converter("waffles")=="currency not available"
+
