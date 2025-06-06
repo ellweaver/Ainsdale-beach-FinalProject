@@ -175,7 +175,7 @@ def extract_df_dummy(*args, **kwargs):
     cdf = pl.DataFrame(
         {
             "currency_id": [1, 2, 3, 4],
-            "currency_code": ["GBP", "JPY", "CNY", "EUR"],
+            "currency_code": ["GBP", "USD", "EUR", "EUR"],
             "created_at": [1, 2, 3, 4],
             "last_updated": [1, 2, 3, 4],
         }
