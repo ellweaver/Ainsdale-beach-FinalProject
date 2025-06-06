@@ -250,6 +250,11 @@ class TestMakeDimCurrency:
         assert "US Dollar" in data
         assert "Euro" in data
         assert "Euro" in data
+        assert "Zloty" in data
+        assert "Canadian Dollar" in data 
+        assert "Australian Dollar" in data 
+        assert "Yuan Renminbi" in data
+
 
 
 class TestMakeDimDesign:
