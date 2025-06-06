@@ -19,7 +19,7 @@ data "archive_file" "transform_py" {
   source_file      = "${path.module}/../src/transform.py"
   output_path      = "${path.module}/../terraform/data/transform.zip"
 }
-
+/*
 resource "local_file" "copy_utils"{
     filename = "${path.module}/../terraform/data/lambda_utils_layer/python/utils.py"
     content = file("${path.module}/../src/utils.py")
@@ -29,13 +29,13 @@ resource "local_file" "copy_db_utils"{
     filename = "${path.module}/../terraform/data/lambda_db_utils_layer/python/db_utils.py"
     content = file("${path.module}/../src/db_utils.py")
   }
-
+*/
 data "archive_file" "python_utils_layer" {
   type             = "zip"
   output_file_mode = "0666"
   source_dir      = "${path.module}/../terraform/data/lambda_utils_layer"
   output_path      = "${path.module}/../terraform/data/utils_layer.zip"
-  depends_on = [ local_file.copy_utils ]
+  #depends_on = [ local_file.copy_utils ]
 
 }
 
@@ -44,7 +44,7 @@ data "archive_file" "python_db_utils_layer" {
   output_file_mode = "0666"
   source_dir       = "${path.module}/../terraform/data/lambda_db_utils_layer"
   output_path      = "${path.module}/../terraform/data/db_utils_layer.zip"
-  depends_on = [ local_file.copy_db_utils ]
+  #depends_on = [ local_file.copy_db_utils ]
 }
 
 
@@ -76,7 +76,7 @@ resource "aws_s3_object" "python_utils_layer_upload" {
   key    = "python_utils"
   source = data.archive_file.python_utils_layer.output_path
   etag   = filemd5(data.archive_file.python_utils_layer.output_path)
-  depends_on = [ local_file.copy_utils ]
+  #depends_on = [ local_file.copy_utils ]
 
 }
 
@@ -85,7 +85,7 @@ resource "aws_s3_object" "python_db_utils_layer_upload" {
   key    = "python_db_utils"
   source = data.archive_file.python_db_utils_layer.output_path
   etag   = filemd5(data.archive_file.python_db_utils_layer.output_path)
-  depends_on = [ data.archive_file.python_db_utils_layer ]
+  #depends_on = [ data.archive_file.python_db_utils_layer ]
 
 }
 
