@@ -33,8 +33,10 @@ resource "local_file" "copy_db_utils"{
 data "archive_file" "python_utils_layer" {
   type             = "zip"
   output_file_mode = "0666"
-    source_dir      = "${path.module}/../terraform/data/lambda_utils_layer"
+  source_dir      = "${path.module}/../terraform/data/lambda_utils_layer"
   output_path      = "${path.module}/../terraform/data/utils_layer.zip"
+  depends_on = [ local_file.copy_utils ]
+
 }
 
 data "archive_file" "python_db_utils_layer" {
@@ -42,6 +44,7 @@ data "archive_file" "python_db_utils_layer" {
   output_file_mode = "0666"
   source_dir       = "${path.module}/../terraform/data/lambda_db_utils_layer"
   output_path      = "${path.module}/../terraform/data/db_utils_layer.zip"
+  depends_on = [ local_file.copy_db_utils ]
 }
 
 
