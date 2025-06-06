@@ -34,6 +34,7 @@ def transform_data(
     """
 
     logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
 
     table_name_list = [
         "counterparty",
@@ -107,14 +108,12 @@ def transform_data(
                 bucket_name=destination_bucket,
                 key=f"{key}{batch_id}_{table}.parquet"
             )
-            
-        # listing = s3_client.list_objects_v2(Bucket=destination_bucket)
-        # print(listing["Contents"][0]["Key"])
-
+            logger.info(f"{batch_id}_{table}.parquet successfully uploaded to processed bucket")
+        logger.info("all tables successfully uploaded")
         return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
 
     except Exception as e:
-        logger.error(e)
+        logger.error({"status": "Failure", "message": e})
         return {"status": "Failure", "message": e}
 
 def make_fact_sales_order(sales_order_table):
