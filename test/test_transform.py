@@ -247,9 +247,14 @@ class TestMakeDimCurrency:
         dim_currency = make_dim_currency(df)
         data = dim_currency.get_column("currency_name")
         assert "Pound Sterling" in data
+        assert "US Dollar" in data
         assert "Euro" in data
-        assert "Yen" in data
+        assert "Euro" in data
+        assert "Zloty" in data
+        assert "Canadian Dollar" in data 
+        assert "Australian Dollar" in data 
         assert "Yuan Renminbi" in data
+
 
 
 class TestMakeDimDesign:

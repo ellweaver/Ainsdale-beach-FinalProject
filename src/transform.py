@@ -5,7 +5,8 @@ from utils import upload_file, download_file
 import polars as pl
 import pyarrow as pa
 from datetime import date
-import mpu 
+from utils import currency_code_converter
+
 
 
 
@@ -241,11 +242,9 @@ def make_dim_currency(currency_table):
     dim_currency = currency_table.drop(["created_at", "last_updated"])
     columns = pl.col("currency_code")
     dim_currency = dim_currency.with_columns(
-        pl.col("currency_code").map_elements(mpu.units.get_currency, return_dtype=object).alias("currency_name")
+        pl.col("currency_code").map_elements(currency_code_converter, return_dtype=str).alias("currency_name")
     )
     
-    dim_currency = dim_currency.with_columns(pl.col("currency_name").map_elements(str,return_dtype=str))
-
     return dim_currency
 
 
