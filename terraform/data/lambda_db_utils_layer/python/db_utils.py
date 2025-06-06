@@ -4,7 +4,6 @@ from botocore.exceptions import ClientError
 import json
 
 
-
 def get_db_secret(client=None):
 
     secret_name = "toteys_db_credentials"
