@@ -76,13 +76,7 @@ resource "aws_s3_object" "python_utils_layer_upload" {
   key    = "python_utils"
   source = data.archive_file.python_utils_layer.output_path
   etag   = filemd5(data.archive_file.python_utils_layer.output_path)
-
-}
-
-resource "aws_lambda_layer_version" "python_utils_layer" {
-  s3_bucket  = aws_s3_bucket.python_bucket.bucket
-  s3_key     = aws_s3_object.python_utils_layer_upload.key
-  layer_name = "python_utils"
+  depends_on = [ local_file.copy_utils ]
 
 }
 
@@ -95,10 +89,19 @@ resource "aws_s3_object" "python_db_utils_layer_upload" {
 
 }
 
+resource "aws_lambda_layer_version" "python_utils_layer" {
+  s3_bucket  = aws_s3_bucket.python_bucket.bucket
+  s3_key     = aws_s3_object.python_utils_layer_upload.key
+  layer_name = "python_utils"
+}
+
+
+
 resource "aws_lambda_layer_version" "python_db_utils_layer" {
   s3_bucket  = aws_s3_bucket.python_bucket.bucket
   s3_key     = aws_s3_object.python_db_utils_layer_upload.key
   layer_name = "python_db_utils"
+  depends_on = 
 
 }
 resource "aws_lambda_layer_version" "python_pg8000_layer" {
