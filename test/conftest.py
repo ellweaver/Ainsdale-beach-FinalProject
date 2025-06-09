@@ -31,21 +31,6 @@ def database_connect(monkeypatch):
     monkeypatch.setattr("extract.close_db_connection", close_empty_conn)
 
 
-# @pytest.fixture(autouse=True)
-# def dummy_df(monkeypatch):
-#     def generate_dummy_df(*args, **kwargs):
-#         df = pl.DataFrame(
-#             {
-#                 "user_id": [101, 102, 103, 104, 105],
-#                 "is_premium": [True, False, True, False, True],
-#                 "page_views": [25, 8, 33, 5, 41],
-#                 "click_rate": [0.12, 0.05, 0.20, 0.03, 0.18],
-#             }
-#         )
-#         return df
-
-#     monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
-
 
 @pytest.fixture(scope="function")
 def test_s3():
@@ -66,6 +51,7 @@ def test_bucket(test_s3):
         },
     )
 
+
 @pytest.fixture(scope="function")
 def test_tf_bucket(test_s3):
     """Creates mock_bucket for client"""
@@ -78,7 +64,6 @@ def test_tf_bucket(test_s3):
     )
 
     yield test_s3
-    
 
 
 @pytest.fixture(scope="function")
@@ -115,6 +100,7 @@ def upload_secret(test_secret_manager):
             }
         ),
     )
+
 
 @pytest.fixture(autouse=True)
 def extract_df_dummy(*args, **kwargs):
@@ -177,7 +163,7 @@ def extract_df_dummy(*args, **kwargs):
             "currency_id": [1, 2, 3, 4, 5, 6, 7, 8],
             "currency_code": ["GBP", "USD", "EUR", "EUR", "PLN", "CAD", "AUD", "CNY"],
             "created_at": [1, 2, 3, 4, 5, 6, 7, 8],
-            "last_updated": [1, 2, 3, 4, 5, 6, 7, 8]
+            "last_updated": [1, 2, 3, 4, 5, 6, 7, 8],
         }
     )
 
@@ -270,7 +256,7 @@ def extract_df_dummy(*args, **kwargs):
             "paid": [1],
             "payment_date": [1],
             "company_ac_number": [1],
-            "counterparty_ac_number": [1]
+            "counterparty_ac_number": [1],
         }
     )
 
@@ -281,7 +267,7 @@ def extract_df_dummy(*args, **kwargs):
             "sales_order_id": [1],
             "purchase_order_id": [1],
             "created_at": [1],
-            "last_updated": [1]
+            "last_updated": [1],
         }
     )
 
@@ -321,3 +307,28 @@ def dummy_df(monkeypatch, extract_df_dummy):
     dfs = iter(df_list)
 
     monkeypatch.setattr("src.extract.pl.read_database", lambda *_: next(dfs))
+
+@pytest.fixture()
+def test_lambdas(monkeypatch):
+    def test_lambda(*args, **kwargs):
+        return "lambdahandler is used correctly"
+
+    monkeypatch.setattr("extract.extract_data", test_lambda)
+    monkeypatch.setattr("load.load_data", test_lambda)
+    monkeypatch.setattr("transform.transform_data",test_lambda)
+
+
+
+@pytest.fixture()
+def test_load_read_parquet(monkeypatch):
+    def test_read_parquet(*args, **kwargs):
+        load_df = pl.DataFrame(
+        {
+            "payment_type_id": [1],
+            "payment_type_name": [1],
+            "created_at": [1],
+            "last_updated": [1],
+        } )
+        return load_df
+
+    monkeypatch.setattr("load.pl.read_parquet",test_read_parquet)

@@ -22,12 +22,13 @@ class TestGetDBSecrets:
     def test_get_db_secrets_for_error(self, test_secret_manager):
 
         with pytest.raises(ClientError) as exc:
-            get_db_secret(client= test_secret_manager)
+            get_db_secret(client=test_secret_manager)
         err = exc.value.response["Error"]
         assert err == {
             "Message": "Secrets Manager can't find the specified secret.",
             "Code": "ResourceNotFoundException",
         }
+
 
 class TestGetDBWarehouseSecrets:
     @pytest.mark.it("test db warehouse returns correct secret")
@@ -42,16 +43,15 @@ class TestGetDBWarehouseSecrets:
             "port": "0",
         }
 
-    @pytest.mark.it("test get db warehouse secrets returns error when secret does not exist")
+    @pytest.mark.it(
+        "test get db warehouse secrets returns error when secret does not exist"
+    )
     def test_secrets_manager_for_error(self, test_secret_manager):
 
         with pytest.raises(ClientError) as exc:
-            get_db_warehouse_secret(client= test_secret_manager)
+            get_db_warehouse_secret(client=test_secret_manager)
         err = exc.value.response["Error"]
         assert err == {
             "Message": "Secrets Manager can't find the specified secret.",
             "Code": "ResourceNotFoundException",
         }
-
-
-

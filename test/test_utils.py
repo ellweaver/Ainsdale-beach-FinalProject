@@ -52,12 +52,12 @@ class TestDownloadFile:
         assert response["code"] == "NoSuchKey"
 
     class TestCurrencyCodeConverter:
-        @pytest.mark.it('test currency converter converts usd correctly')
+        @pytest.mark.it("test currency converter converts usd correctly")
         def test_currency_converter_converts_usd(self):
-            assert currency_code_converter("usd")=="US Dollar"
+            assert currency_code_converter("usd") == "US Dollar"
 
-        
-        @pytest.mark.it('test currency converter returns correct response to unavailable currency')
+        @pytest.mark.it(
+            "test currency converter returns correct response to unavailable currency"
+        )
         def test_currency_converter_returns_correct_response(self):
-            assert currency_code_converter("waffles")=="currency not available"
-
+            assert currency_code_converter("waffles") == "currency not available"
