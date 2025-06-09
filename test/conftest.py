@@ -31,21 +31,6 @@ def database_connect(monkeypatch):
     monkeypatch.setattr("extract.close_db_connection", close_empty_conn)
 
 
-# @pytest.fixture(autouse=True)
-# def dummy_df(monkeypatch):
-#     def generate_dummy_df(*args, **kwargs):
-#         df = pl.DataFrame(
-#             {
-#                 "user_id": [101, 102, 103, 104, 105],
-#                 "is_premium": [True, False, True, False, True],
-#                 "page_views": [25, 8, 33, 5, 41],
-#                 "click_rate": [0.12, 0.05, 0.20, 0.03, 0.18],
-#             }
-#         )
-#         return df
-
-#     monkeypatch.setattr("src.extract.pl.read_database", generate_dummy_df)
-
 
 @pytest.fixture(scope="function")
 def test_s3():
@@ -329,11 +314,21 @@ def test_lambdas(monkeypatch):
         return "lambdahandler is used correctly"
 
     monkeypatch.setattr("extract.extract_data", test_lambda)
-    #monkeypatch.setattr("transform.transform_data", test_lambda)
+    monkeypatch.setattr("load.load_data", test_lambda)
+    monkeypatch.setattr("transform.transform_data",test_lambda)
+
+
 
 @pytest.fixture()
-def test_transform_lambda(monkeypatch):
-    def test_lambda(*args, **kwargs):
-        return "lambdahandler is used correctly"
+def test_load_read_parquet(monkeypatch):
+    def test_read_parquet(*args, **kwargs):
+        load_df = pl.DataFrame(
+        {
+            "payment_type_id": [1],
+            "payment_type_name": [1],
+            "created_at": [1],
+            "last_updated": [1],
+        } )
+        return load_df
 
-    monkeypatch.setattr("transform.transform_data", test_lambda)
+    monkeypatch.setattr("load.pl.read_parquet",test_read_parquet)

@@ -25,7 +25,7 @@ logger.setLevel(logging.INFO)
 
 
 def load_data(
-    s3_client, key, batch_id, sourcebucket="ainsdale_transform_bucket", test=False
+    s3_client, key, batch_id, sourcebucket="ainsdale-processed-bucket", test=False
 ):
     """takes data from transform bucket and upload to data warehoue
 
@@ -57,14 +57,13 @@ def load_data(
             file = download_file(
                 s3_client, sourcebucket, f"{key}{batch_id}_{table}.parquet"
             )
-            if file.get("body"):
-                with open(file["body"].read(), "r") as parq:
-                    df = pl.read_parquet(parq)
+            if file["code"]==200:
+                df = pl.read_parquet(file["body"])
+
             else:
-                raise Exception(
-                    "An error occurred (404) when calling the test operation: fact_sales_order file not found"
-                )
-                # raise ClientError(operation_name="test",error_response={'Error':{'Error':f"{table} file not found",'Code':404, 'Message':f"{table} file not found"}})
+                logger.error({"status": 404, "code": f"{table} not found"})
+                return {"status": 404, "code": f"{table} not found"}
+            
             if not test:
                 df.write_database(table_name=table, connection=conn)
             logger.info(f"{table} successfully uploaded to data warehouse")

@@ -384,10 +384,14 @@ class TestLogging:
             assert "{'status': 'Failure', 'message': KeyError('body')}" in caplog.text
 
 class TestLambdaHandler:
-    @pytest.mark.skip
     @pytest.mark.it("test lambda hander invokes transform data ")
-    def test_lambda_handler_invokes_transform_data(self,test_transform_lambda):
-        test_event = {}
+    def test_lambda_handler_invokes_transform_data(self,test_lambdas):
+        test_event =  {
+  "status": "Success",
+  "code": 200,
+  "key": "test",
+  "batch_id": "test"
+}
         test_context = ""
         response=lambda_handler(test_event,test_context)
         assert response == "lambdahandler is used correctly"

@@ -1,12 +1,12 @@
 import pytest
-from load import load_data
+from load import load_data, lambda_handler
 from utils import upload_file
 import logging
 
 
 class TestLoadData:
     @pytest.mark.it("Test load data retrieves parquets from transform s3 bucket")
-    def test_load_data(self, test_tf_bucket):
+    def test_load_data(self, test_tf_bucket, test_load_read_parquet):
         table_names = {
             "fact_sales_order": "",
             "dim_date": "",
@@ -32,7 +32,7 @@ class TestLoadData:
             "key": key,
             "batch_id": batch_id,
         }
-
+    
     @pytest.mark.it("Test load data handle errors")
     def test_load_data_handle_errors(self, test_tf_bucket):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
@@ -41,15 +41,12 @@ class TestLoadData:
         response = load_data(
             test_tf_bucket, key, batch_id, sourcebucket=source_bucket, test=True
         )
-        assert response == {
-            "status": "Failure",
-            "code": "An error occurred (404) when calling the test operation: fact_sales_order file not found",
-        }
+        assert response == {"status": 404, "code": 'fact_sales_order not found'}
 
 
 class TestLoadDataLogging:
     @pytest.mark.it("Test load data uses correct logger")
-    def test_load_data_uses_correct_logger(self, test_tf_bucket, caplog):
+    def test_load_data_uses_correct_logger(self, test_tf_bucket, caplog,test_load_read_parquet):
 
         key = "data/2025/5/29/2025-05-29_00:00:00/"
         batch_id = "2025-05-29_00:00:00"
@@ -65,7 +62,7 @@ class TestLoadDataLogging:
         assert "load" in caplog.text
 
     @pytest.mark.it("Test load data outputs correct info logs")
-    def test_load_data_outputs_info_logs(self, test_tf_bucket, caplog):
+    def test_load_data_outputs_info_logs(self, test_tf_bucket, caplog, test_load_read_parquet):
         table_names = {
             "fact_sales_order": "",
             "dim_date": "",
@@ -100,7 +97,7 @@ class TestLoadDataLogging:
             assert log in caplog.text
 
     @pytest.mark.it("Test load data outputs correct error logs")
-    def test_load_data_outputs_error_logs(self, test_tf_bucket, caplog):
+    def test_load_data_outputs_error_logs(self, test_tf_bucket, caplog,test_load_read_parquet):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
         batch_id = "2025-05-29_00:00:00"
         source_bucket = "test_tf_bucket"
@@ -109,6 +106,20 @@ class TestLoadDataLogging:
                 test_tf_bucket, key, batch_id, sourcebucket=source_bucket, test=True
             )
         assert (
-            "An error occurred (404) when calling the test operation: fact_sales_order file not found"
+            "{'status': 404, 'code': 'fact_sales_order not found'}"
             in caplog.text
         )
+
+class TestLambdaHandler:
+    @pytest.mark.it('test lambda handle invoke load data')
+    def test_lambda_handler(self, test_lambdas):
+        test_event = {
+  "status": "Success",
+  "code": 200,
+  "key": "test",
+  "batch_id": "test"
+}
+        test_context = ""
+        response=lambda_handler(test_event,test_context)
+        assert response == "lambdahandler is used correctly"
+       
