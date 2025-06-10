@@ -8,13 +8,13 @@ class TestLoadData:
     @pytest.mark.it("Test load data retrieves parquets from transform s3 bucket")
     def test_load_data(self, test_tf_bucket, test_load_read_parquet):
         table_names = {
-            "fact_sales_order": "",
             "dim_date": "",
             "dim_staff": "",
             "dim_location": "",
             "dim_design": "",
             "dim_currency": "",
             "dim_counterparty": "",
+            "fact_sales_order": "",
         }
 
         key = "data/2025/5/29/2025-05-29_00:00:00/"
@@ -41,7 +41,7 @@ class TestLoadData:
         response = load_data(
             test_tf_bucket, key, batch_id, sourcebucket=source_bucket, test=True
         )
-        assert response == {"status": "Failure", "code": 404, "message": 'fact_sales_order not found'}
+        assert response == {"status": "Failure", "code": 404, "message": 'dim_date not found'}
    
     @pytest.mark.it("Test load data client exceptions errors")
     def test_load_data_handle_exceptions(self, test_tf_bucket):
@@ -51,7 +51,7 @@ class TestLoadData:
         response = load_data(
             test_tf_bucket, key, batch_id, sourcebucket=source_bucket, test=True
         )
-        assert response == {"status": "Failure", "code": 404, "message": 'fact_sales_order not found'}
+        assert response == {"status": "Failure", "code": 404, "message": 'dim_date not found'}
 
 
 class TestLoadDataLogging:
@@ -74,13 +74,13 @@ class TestLoadDataLogging:
     @pytest.mark.it("Test load data outputs correct info logs")
     def test_load_data_outputs_info_logs(self, test_tf_bucket, caplog, test_load_read_parquet):
         table_names = {
-            "fact_sales_order": "",
             "dim_date": "",
             "dim_staff": "",
             "dim_location": "",
             "dim_design": "",
             "dim_currency": "",
             "dim_counterparty": "",
+            "fact_sales_order": "",
         }
 
         key = "data/2025/5/29/2025-05-29_00:00:00/"
@@ -117,7 +117,7 @@ class TestLoadDataLogging:
             )
         print(caplog.text)
         assert (
-            "{'status': 'Failure', 'code': 404, 'message': 'fact_sales_order not found'}"
+            "{'status': 'Failure', 'code': 404, 'message': 'dim_date not found'}"
             in caplog.text
         )
 

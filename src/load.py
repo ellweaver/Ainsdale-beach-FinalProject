@@ -1,7 +1,9 @@
 import boto3
 import polars as pl
+import pandas as pd
 import logging
 from utils import download_file, get_db_secret
+
 
 
 
@@ -42,13 +44,13 @@ def load_data(
     conn = f"postgresql://{user}:{password}@{host}:{port}/{database}"
 
     processed_dict = {
-        "fact_sales_order": "",
         "dim_date": "",
         "dim_staff": "",
         "dim_location": "",
         "dim_design": "",
         "dim_currency": "",
         "dim_counterparty": "",
+        "fact_sales_order": "",
     }
 
     try:
@@ -57,14 +59,14 @@ def load_data(
                 s3_client, sourcebucket, f"{key}{batch_id}_{table}.parquet"
             )
             if file["code"]==200:
-                df = pl.read_parquet(file["body"])
+                df = pd.read_parquet(file["body"])
 
             else: raise Exception(f"{table} not found")
                 
             
             
-            if not test:
-                df.write_database(table_name=table, connection=conn,engine= "adbc", if_table_exists= "append")
+            if not test: 
+                df.write_database(table_name=table, connection=conn, if_table_exists= "append")
             logger.info(f"{table} successfully uploaded to data warehouse")
 
         logger.info("All tables successfully uploaded to data warehouse")
@@ -75,3 +77,7 @@ def load_data(
         return {"status": "Failure", "code": 404, "message": str(e)}
 
     
+print(lambda_handler({'status': 'Success', 'code': 200, 'key': 'data/2025/6/10/2025-06-10_11:49:15/', 'batch_id': '2025-06-10_11:49:15'},""))
+
+
+     

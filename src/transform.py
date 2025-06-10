@@ -78,9 +78,9 @@ def transform_data(
         for table in table_name_list:
 
             file = download_file(
-                s3_client, source_bucket, f"{key}{batch_id}_{table}test.csv"
+                s3_client, source_bucket, f"{key}{batch_id}_{table}.csv"
             )
-            print(file)
+        
 
             df_dict[table] = pl.read_csv(file["body"], try_parse_dates=True)
         processed_dict["fact_sales_order"] = make_fact_sales_order(
@@ -180,6 +180,7 @@ def make_dim_date():
     )
 
     dim_date = dim_date.with_columns(
+        (pl.col("date_id").dt.date()).alias("date_id"),
         (pl.col("date_id").dt.year()).alias("year"),
         (pl.col("date_id").dt.month()).alias("month"),
         (pl.col("date_id").dt.day()).alias("day"),
@@ -188,7 +189,7 @@ def make_dim_date():
         (pl.col("date_id").dt.strftime("%B")).alias("month_name"),
         (pl.col("date_id").dt.quarter()).alias("quarter"),
     )
-
+    
     return dim_date
 
 
@@ -303,10 +304,3 @@ def make_dim_counterparty(counterparty_table, address_table):
     )
 
     return dim_counterparty
-
-lambda_handler({
-  "status": "Success",
-  "code": 200,
-  "key": "data/2025/6/9/2025-06-09_17:07:04/",
-  "batch_id": "2025-06-09_17:07:04"
-},"")

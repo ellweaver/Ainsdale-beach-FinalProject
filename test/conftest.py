@@ -370,7 +370,7 @@ def test_df_read_db(monkeypatch, extract_df_dummy):
         return None
 
 
-    monkeypatch.setattr("src.extract.pl.read_database_uri", lambda *_: next(dfs))
+    monkeypatch.setattr("extract.pl.read_database_uri", lambda *_: next(dfs))
     monkeypatch.setattr("extract.get_db_secret",test_db_secret)
     monkeypatch.setattr("load.get_db_secret",test_db_secret)
     

@@ -26,7 +26,6 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
         dict: status message
     """
 
-    
 
     table_name_list = [
         "counterparty",
@@ -76,9 +75,7 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
             "batch_id": time_now,
         }
     except Exception as e:
-        print(e)
         logger.error(e)
         return {"status": "Failure", "error": e}
    
 
-extract_data(boto3.client("s3"))
