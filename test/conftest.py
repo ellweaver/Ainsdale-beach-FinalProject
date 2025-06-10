@@ -288,7 +288,7 @@ def extract_df_dummy(*args, **kwargs):
 
     return full_mirror_df
 
-"""
+
 @pytest.fixture(autouse=True)
 def dummy_df(monkeypatch, extract_df_dummy):
     df_list = [
@@ -307,8 +307,8 @@ def dummy_df(monkeypatch, extract_df_dummy):
 
     dfs = iter(df_list)
 
-    monkeypatch.setattr("src.extract.pl.read_database", lambda *_: next(dfs))
-"""
+    monkeypatch.setattr("extract.pl.read_database", lambda *_: next(dfs))
+
 
 @pytest.fixture()
 def test_lambdas(monkeypatch):
