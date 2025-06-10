@@ -53,8 +53,9 @@ def load_data(
         "fact_sales_order": "",
     }
 
-    try:
-        for table in processed_dict:
+    # try:
+    for table in processed_dict.keys():
+            print(table, "<<<<<<<")
             file = download_file(
                 s3_client, sourcebucket, f"{key}{batch_id}_{table}.parquet"
             )
@@ -69,15 +70,15 @@ def load_data(
                 df.write_database(table_name=table, connection=conn, if_table_exists= "append")
             logger.info(f"{table} successfully uploaded to data warehouse")
 
-        logger.info("All tables successfully uploaded to data warehouse")
-        return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
+    logger.info("All tables successfully uploaded to data warehouse")
+    return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
 
-    except Exception as e:
-        logger.error({"status": "Failure", "code": 404, "message": str(e)})
-        return {"status": "Failure", "code": 404, "message": str(e)}
+    # except Exception as e:
+    #     logger.error({"status": "Failure", "code": 404, "message": str(e)})
+    #     return {"status": "Failure", "code": 404, "message": str(e)}
 
     
-print(lambda_handler({'status': 'Success', 'code': 200, 'key': 'data/2025/6/10/2025-06-10_11:49:15/', 'batch_id': '2025-06-10_11:49:15'},""))
+# print(lambda_handler({'status': 'Success', 'code': 200, 'key': 'data/2025/6/10/2025-06-10_11:49:15/', 'batch_id': '2025-06-10_11:49:15'},""))
 
 
      
