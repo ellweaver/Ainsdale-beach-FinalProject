@@ -23,7 +23,7 @@ upload_file(
 ```
 
 ## Transform
-The purpose of our transform function is to reshape our ingested S3 data towards an OLAP optimised format. Polars performantly reshapes our 11 initial CSV files, into 7 dataframes that form the basis of a star schema. During the transformation process, relevant dataframes are held in dictionaries. This facilitates easy looping and improves readability. Pyarrow  converts the dataframes to `.parquet`:
+The purpose of our transform function is to reshape our ingested S3 data towards an OLAP optimised format. Polars performantly reshapes our 11 initial `.csv` files, into 7 dataframes that form the basis of a star schema. During the transformation process, relevant dataframes are held in dictionaries. This facilitates easy looping and improves readability. Pyarrow  converts the dataframes to `.parquet`:
 
 ```python
 for table, value in processed_dict.items():
@@ -56,7 +56,7 @@ pull some analysis
 
 
 ## Hosting
-Our infrastructure has been provisioned in AWS, using the following services: 
+Our infrastructure has been provisioned in AWS, employing the following services: 
 - RDS 
 - IAM
 - Step Functions
@@ -73,7 +73,9 @@ Our project employs GitHub actions to adhere to CICD principles (Continuous Inte
 
 
 ## Terraform Structure
-file structure
+Terraform deploys our infrastructure in AWS. This allows for scalable and granular control of infrastucture and easy co-operation between developers on the project. Terraform is also the basis of our CICD infrastructure. The file structure for our terraform directory is relatively conventional: cloudwatch, data, events, iam, lambda, main, s3, sns, stepfunction,vars. The `terraform.tfstate` file is held in S3 to better enable remote coworking and to enable easy switching of the backend `terraform.tfstate` file.   
+
+
 Resources provisioned outside Terraform:
 - backend bucket:
     - tf state
