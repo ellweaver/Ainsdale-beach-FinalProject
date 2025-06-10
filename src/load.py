@@ -1,17 +1,10 @@
 import boto3
 import polars as pl
 import logging
-from db_utils import connect_to_db, close_db_connection
-from utils import download_file
+from utils import download_file, get_db_secret
 
 
-"""
-1. Needs to download the latest data from the transform bucket
-2. Latest data would pass from transform.py as event["key"] refer to key in transform s3 bucket,
-   event["batch_id"] referring to current batch
-3. For each table, it needs to upload to the data warehouse
-4. Import is going to get key and batch_id
-"""
+
 
 
 def lambda_handler(event, context):
@@ -38,9 +31,15 @@ def load_data(
     Returns:
         dict:dictionary containing status code and key
     """
-    conn = None
-    if not test:
-        conn = connect_to_db("toteys_db_warehouse_credentials")
+    
+
+    secrets= get_db_secret(secretname="toteys_db_warehouse_credentials")
+    user=secrets["user"]
+    password=secrets["password"]
+    database=secrets["database"]
+    host=secrets["host"]
+    port=secrets["port"]
+    conn = f"postgresql://{user}:{password}@{host}:{port}/{database}"
 
     processed_dict = {
         "fact_sales_order": "",
@@ -60,20 +59,19 @@ def load_data(
             if file["code"]==200:
                 df = pl.read_parquet(file["body"])
 
-            else:
-                logger.error({"status": 404, "code": f"{table} not found"})
-                return {"status": 404, "code": f"{table} not found"}
+            else: raise Exception(f"{table} not found")
+                
+            
             
             if not test:
-                df.write_database(table_name=table, connection=conn)
+                df.write_database(table_name=table, connection=conn,engine= "adbc", if_table_exists= "append")
             logger.info(f"{table} successfully uploaded to data warehouse")
+
         logger.info("All tables successfully uploaded to data warehouse")
         return {"status": "Success", "code": 200, "key": key, "batch_id": batch_id}
 
     except Exception as e:
-        logger.error(str(e))
-        return {"status": "Failure", "code": str(e)}
+        logger.error({"status": "Failure", "code": 404, "message": str(e)})
+        return {"status": "Failure", "code": 404, "message": str(e)}
 
-    finally:
-        if conn:
-            close_db_connection(conn)
+    

@@ -16,7 +16,7 @@ def aws_credentials():
     os.environ["AWS_SESSION_TOKEN"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
 
-
+"""
 @pytest.fixture(autouse=True)
 def database_connect(monkeypatch):
     def start_empty_conn(*args, **kwargs):
@@ -29,6 +29,7 @@ def database_connect(monkeypatch):
     monkeypatch.setattr("load.connect_to_db", start_empty_conn)
     monkeypatch.setattr("load.close_db_connection", close_empty_conn)
     monkeypatch.setattr("extract.close_db_connection", close_empty_conn)
+    """
 
 
 
@@ -287,7 +288,7 @@ def extract_df_dummy(*args, **kwargs):
 
     return full_mirror_df
 
-
+"""
 @pytest.fixture(autouse=True)
 def dummy_df(monkeypatch, extract_df_dummy):
     df_list = [
@@ -307,6 +308,7 @@ def dummy_df(monkeypatch, extract_df_dummy):
     dfs = iter(df_list)
 
     monkeypatch.setattr("src.extract.pl.read_database", lambda *_: next(dfs))
+"""
 
 @pytest.fixture()
 def test_lambdas(monkeypatch):
@@ -332,3 +334,45 @@ def test_load_read_parquet(monkeypatch):
         return load_df
 
     monkeypatch.setattr("load.pl.read_parquet",test_read_parquet)
+
+@pytest.fixture(autouse=True)
+def test_df_read_db(monkeypatch, extract_df_dummy):
+   
+    df_list = [
+        extract_df_dummy["counterparty"],
+        extract_df_dummy["currency"],
+        extract_df_dummy["department"],
+        extract_df_dummy["design"],
+        extract_df_dummy["staff"],
+        extract_df_dummy["sales_order"],
+        extract_df_dummy["address"],
+        extract_df_dummy["payment"],
+        extract_df_dummy["purchase_order"],
+        extract_df_dummy["payment_type"],
+        extract_df_dummy["transaction"],
+    ]
+
+    dfs = iter(df_list)
+        
+        
+    
+    def test_db_secret(secretname=None):
+        test_output={
+                "user": "test_user",
+                "password": "test_password",
+                "host": "test_host",
+                "database": "test_db",
+                "port": "0",
+            }
+        return test_output
+    
+    def test_write_db():
+        return None
+
+
+    monkeypatch.setattr("src.extract.pl.read_database_uri", lambda *_: next(dfs))
+    monkeypatch.setattr("extract.get_db_secret",test_db_secret)
+    monkeypatch.setattr("load.get_db_secret",test_db_secret)
+    
+    
+

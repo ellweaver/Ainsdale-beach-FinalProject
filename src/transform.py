@@ -1,11 +1,11 @@
 import boto3
 import logging
 from io import BytesIO
-from utils import upload_file, download_file
+from utils import upload_file, download_file, currency_code_converter
 import polars as pl
 import pyarrow as pa
 from datetime import date
-from utils import currency_code_converter
+
 
 
 def lambda_handler(event, context):
@@ -78,8 +78,9 @@ def transform_data(
         for table in table_name_list:
 
             file = download_file(
-                s3_client, source_bucket, f"{key}{batch_id}_{table}.csv"
+                s3_client, source_bucket, f"{key}{batch_id}_{table}test.csv"
             )
+            print(file)
 
             df_dict[table] = pl.read_csv(file["body"], try_parse_dates=True)
         processed_dict["fact_sales_order"] = make_fact_sales_order(
@@ -302,3 +303,10 @@ def make_dim_counterparty(counterparty_table, address_table):
     )
 
     return dim_counterparty
+
+lambda_handler({
+  "status": "Success",
+  "code": 200,
+  "key": "data/2025/6/9/2025-06-09_17:07:04/",
+  "batch_id": "2025-06-09_17:07:04"
+},"")

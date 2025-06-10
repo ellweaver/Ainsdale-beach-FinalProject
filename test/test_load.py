@@ -41,7 +41,17 @@ class TestLoadData:
         response = load_data(
             test_tf_bucket, key, batch_id, sourcebucket=source_bucket, test=True
         )
-        assert response == {"status": 404, "code": 'fact_sales_order not found'}
+        assert response == {"status": "Failure", "code": 404, "message": 'fact_sales_order not found'}
+   
+    @pytest.mark.it("Test load data client exceptions errors")
+    def test_load_data_handle_exceptions(self, test_tf_bucket):
+        key = "test"
+        batch_id = "test"
+        source_bucket = "testdd_tf_bucket"
+        response = load_data(
+            test_tf_bucket, key, batch_id, sourcebucket=source_bucket, test=True
+        )
+        assert response == {"status": "Failure", "code": 404, "message": 'fact_sales_order not found'}
 
 
 class TestLoadDataLogging:
@@ -95,7 +105,7 @@ class TestLoadDataLogging:
         ]
         for log in log_list:
             assert log in caplog.text
-
+    
     @pytest.mark.it("Test load data outputs correct error logs")
     def test_load_data_outputs_error_logs(self, test_tf_bucket, caplog,test_load_read_parquet):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
@@ -105,8 +115,9 @@ class TestLoadDataLogging:
             load_data(
                 test_tf_bucket, key, batch_id, sourcebucket=source_bucket, test=True
             )
+        print(caplog.text)
         assert (
-            "{'status': 404, 'code': 'fact_sales_order not found'}"
+            "{'status': 'Failure', 'code': 404, 'message': 'fact_sales_order not found'}"
             in caplog.text
         )
 

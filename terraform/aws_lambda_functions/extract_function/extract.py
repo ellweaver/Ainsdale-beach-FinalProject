@@ -6,8 +6,6 @@ from utils import upload_file, get_db_secret
 import polars as pl
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     s3_client = boto3.client("s3")
@@ -26,7 +24,7 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
         dict: status message
     """
 
-    
+    logger = logging.getLogger(__name__)
 
     table_name_list = [
         "counterparty",
@@ -65,7 +63,7 @@ def extract_data(s3_client=None, bucket="ainsdale-ingestion-bucket"):
                 s3_client,
                 file=out_buffer.getvalue(),
                 bucket_name=bucket,
-                key=f"data/{current_year}/{current_month}/{current_day}/{time_now}/{time_now}_{table}.csv",
+                key=f"data/{current_year}/{current_month}/{current_day}/{time_now}/{time_now}_{table}test.csv",
             )
 
         logger.info("File successfully uploaded to ingestion bucket")

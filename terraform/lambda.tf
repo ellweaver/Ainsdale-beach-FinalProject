@@ -19,33 +19,20 @@ data "archive_file" "transform_py" {
   source_file      = "${path.module}/../src/transform.py"
   output_path      = "${path.module}/../terraform/data/transform.zip"
 }
-/*
-resource "local_file" "copy_utils"{
-    filename = "${path.module}/../terraform/data/lambda_utils_layer/python/utils.py"
-    content = file("${path.module}/../src/utils.py")
-  }
 
-resource "local_file" "copy_db_utils"{
-    filename = "${path.module}/../terraform/data/lambda_db_utils_layer/python/db_utils.py"
-    content = file("${path.module}/../src/db_utils.py")
-  }
-*/
 data "archive_file" "python_utils_layer" {
   type             = "zip"
   output_file_mode = "0666"
   source_dir      = "${path.module}/../terraform/data/lambda_utils_layer"
   output_path      = "${path.module}/../terraform/data/utils_layer.zip"
-  #depends_on = [ local_file.copy_utils ]
+  
 
 }
 
-data "archive_file" "python_db_utils_layer" {
-  type             = "zip"
-  output_file_mode = "0666"
-  source_dir       = "${path.module}/../terraform/data/lambda_db_utils_layer"
-  output_path      = "${path.module}/../terraform/data/db_utils_layer.zip"
-  #depends_on = [ local_file.copy_db_utils ]
-}
+
+
+
+
 
 
 resource "aws_s3_object" "extract_file_upload" {
@@ -76,40 +63,18 @@ resource "aws_s3_object" "python_utils_layer_upload" {
   key    = "python_utils"
   source = data.archive_file.python_utils_layer.output_path
   etag   = filemd5(data.archive_file.python_utils_layer.output_path)
-  #depends_on = [ local_file.copy_utils ]
 
 }
 
-resource "aws_s3_object" "python_db_utils_layer_upload" {
-  bucket = aws_s3_bucket.python_bucket.bucket
-  key    = "python_db_utils"
-  source = data.archive_file.python_db_utils_layer.output_path
-  etag   = filemd5(data.archive_file.python_db_utils_layer.output_path)
-  #depends_on = [ data.archive_file.python_db_utils_layer ]
 
-}
 
 resource "aws_lambda_layer_version" "python_utils_layer" {
   s3_bucket  = aws_s3_bucket.python_bucket.bucket
   s3_key     = aws_s3_object.python_utils_layer_upload.key
-  layer_name = "python_utils"
+  layer_name = "python_utils_layer"
 }
 
 
-
-resource "aws_lambda_layer_version" "python_db_utils_layer" {
-  s3_bucket  = aws_s3_bucket.python_bucket.bucket
-  s3_key     = aws_s3_object.python_db_utils_layer_upload.key
-  layer_name = "python_db_utils"
-
-
-}
-resource "aws_lambda_layer_version" "python_pg8000_layer" {
-  s3_bucket  = "ainsdale-layers-files"
-  s3_key     = "lambda_pg8000_layer.zip"
-  layer_name = "python_pg8000"
-
-}
 
 resource "aws_lambda_layer_version" "python_polars_layer" {
   s3_bucket  = "ainsdale-layers-files"
@@ -125,34 +90,35 @@ resource "aws_lambda_layer_version" "pyarrow_layer" {
 
 }
 
-resource "aws_lambda_layer_version" "mpu_layer" {
+resource "aws_lambda_layer_version" "connector_x_layer" {
   s3_bucket  = "ainsdale-layers-files"
-  s3_key     = "mpu_layer.zip"
-  layer_name = "python_mpu"
+  s3_key     = "conn_x_layer.zip"
+  layer_name = "python_connector_x"
+
+}
+
+resource "aws_lambda_layer_version" "adbc_layer" {
+  s3_bucket  = "ainsdale-layers-files"
+  s3_key     = "adbc_layer.zip"
+  layer_name = "adbc_layer"
 
 }
 
 
 resource "aws_lambda_function" "extract_lambda" {
   function_name = "extract_lambda_function"
-  runtime       = "python3.13"
   role          = aws_iam_role.lambda_role.arn
-  handler       = "extract.lambda_handler"
+  image_uri= "${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-2.amazonaws.com/extract_func:0.0.1"
+  package_type = "Image"
 
-  s3_bucket = aws_s3_bucket.python_bucket.bucket
-  s3_key    = aws_s3_object.extract_file_upload.key
-  source_code_hash=data.archive_file.extract_py.output_base64sha256
-  layers = [
-    aws_lambda_layer_version.python_utils_layer.arn,
-    aws_lambda_layer_version.python_pg8000_layer.arn,
-    aws_lambda_layer_version.python_polars_layer.arn,
-    aws_lambda_layer_version.python_db_utils_layer.arn,
-  ]
+ 
 
   timeout = 60
   publish = true
-
+ 
 }
+
+
 
 resource "aws_lambda_function" "transform_lambda" {
   function_name = "transform_lambda_function"
@@ -167,7 +133,6 @@ resource "aws_lambda_function" "transform_lambda" {
     aws_lambda_layer_version.python_utils_layer.arn,
     aws_lambda_layer_version.python_polars_layer.arn,
     aws_lambda_layer_version.pyarrow_layer.arn,
-    aws_lambda_layer_version.mpu_layer.arn
   ]
 
   timeout = 60
@@ -188,8 +153,8 @@ resource "aws_lambda_function" "load_lambda" {
   layers = [
     aws_lambda_layer_version.python_utils_layer.arn,
     aws_lambda_layer_version.python_polars_layer.arn,
-    aws_lambda_layer_version.python_pg8000_layer.arn,
-    aws_lambda_layer_version.python_db_utils_layer.arn
+    aws_lambda_layer_version.adbc_layer.arn
+  
   ]
 
   timeout = 60

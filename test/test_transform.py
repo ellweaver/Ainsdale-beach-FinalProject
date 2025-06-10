@@ -23,7 +23,7 @@ from utils import upload_file
 class TestTransformData:
     @freeze_time("29-05-2025")
     @pytest.mark.it("Transform data returns correct response")
-    def test_transform_response(self, test_s3, test_bucket, test_tf_bucket):
+    def test_transform_response(self, test_s3, test_bucket, test_tf_bucket,):
         key = "data/2025/5/29/2025-05-29_00:00:00/"
         batch_id = "2025-05-29_00:00:00"
         extract_data(s3_client=test_s3, bucket="test_bucket")
@@ -41,7 +41,7 @@ class TestTransformData:
             "key": key,
             "batch_id": batch_id,
         }
-
+    
     @freeze_time("29-05-2025")
     @pytest.mark.it("Transform data uploads correctly to S3")
     def test_transform_upload(self, test_s3, test_bucket, test_tf_bucket):
