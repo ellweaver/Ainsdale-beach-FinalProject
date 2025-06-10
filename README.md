@@ -67,6 +67,7 @@ Our infrastructure has been provisioned in AWS, using the following services:
 - Amazon EventBridge Scheduler
 - SNS
 
+
 ## Orchestration
 Our project employs GitHub actions to adhere to CICD principles (Continuous Integration Continuous Development). GitHub Actions enables robust, automated testing and deployment. Using our make file tests for: functionality (pytest), formatting (black), coverage (coverage), and security (bandit) can all be actioned before any resources are deployed or changes made to the production code. If those tests are all successful the infrastructure is automatically deployed by terraform into the AWS cloud. This helps maintain the functionality and consistency of the code in a continuous development process.
 
@@ -79,6 +80,7 @@ Resources provisioned outside Terraform:
 - Lambda buckets:
     - python
     - layers
+- Amazon Elastic container Registry
 
 ## Logging
 Cloudwatch retains our project's logs and, error messages are received using SNS.
