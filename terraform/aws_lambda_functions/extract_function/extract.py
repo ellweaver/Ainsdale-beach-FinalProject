@@ -1,6 +1,5 @@
 import logging
 import boto3
-#from botocore.exceptions import ClientError
 from io import BytesIO
 from utils import upload_file, get_db_secret
 import polars as pl
