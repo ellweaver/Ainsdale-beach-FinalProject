@@ -1,4 +1,7 @@
 # Ainsdale-Beach-ETL
+[![Python Version](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
+[![Code Coverage](https://img.shields.io/badge/coverage-99%-green.svg)]
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 ## Summary
 The Ainsdale Beach ETL project is an Extract Transform Load pipeline, using Python, hosted in AWS.
@@ -6,6 +9,54 @@ The primary function of the pipeline is to ingest and transform data from an OLT
 The main objectives of this project are to be able to handle regular data updates and execute performant TDD code (Test Driven Development), providing an effective, usable star schema output with robust versioning.
 An additional feature of this project is to have an S3 bucket containing processed data in Parquet, that mirrors our processed data to permit further analysis better suited to that format.
 Our aim with this project is to enable analysis of important business data without compromising performance for day-to-day transactional operations.
+
+## Prerequisites
+Before you begin, ensure you have met the following requirements:
+```
+**Python** V3.13
+
+**Terraform** V1.5
+
+**Git** for version control
+
+**AWS CLI** (optional but recommended)
+```
+
+## Development setup
+1. Clone the repository:
+```bash
+    git clone https://github.com/your-org/ainsdale-beach-etl.git
+    cd ainsdale-beach-etl
+```
+2. Set up Python TDD Environment
+```bash
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+```
+3. Set up AWS credentials
+If you have save your AWS credentials in local:
+```bash
+    aws configure
+```
+or set the environment variables:
+```bash
+    export AWS_ACCESS_KEY_ID=<Your-Access-Key-ID>
+    export AWS_SECRET_ACCESS_KEY=<Your-Secret-Access-Key>
+    export AWS_DEFAULT_REGION=<region>
+```
+4. Run the set up and testing
+```bash
+    make run-all
+```
+5. Deployment
+```bash
+    cd terraform
+    terraform init
+    terraform plan
+    terraform apply
+```
+
 
 
 ## Extract
@@ -43,29 +94,29 @@ upload_file(
 ```
 
 
-## Load
+## Load - Unfinished
 from bucket
 puts back into rds pg db
 what libraries were used?
 
-## Data Visualisation
+## Data Visualisation - Unfinished
 read db
-some implementation of tableau or looker
+Implementation using locker
 pull some analysis
 - could perhaps use matplotlib
 
 
 ## Hosting
 Our infrastructure has been provisioned in AWS, employing the following services: 
-- RDS 
-- IAM
-- Step Functions
-- Lambda
-- Secrets Manager
-- CloudWatch
-- S3
-- Amazon EventBridge Scheduler
-- SNS
+- **RDS** for Data warehouse
+- **IAM** roles for permissions and policies
+- **Step Functions** for orchestration
+- **Lambda** for functions
+- **Secrets Manager** for AWS secret credentials
+- **CloudWatch** for logging & alarms
+- **S3** for outputs
+- **Amazon EventBridge Scheduler** for manage the events
+- **SNS** for alerts 
 
 
 ## Orchestration
@@ -73,8 +124,22 @@ Our project employs GitHub actions to adhere to CICD principles (Continuous Inte
 
 
 ## Terraform Structure
-Terraform deploys our infrastructure in AWS. This allows for scalable and granular control of infrastucture and easy co-operation between developers on the project. Terraform is also the basis of our CICD infrastructure. The file structure for our terraform directory is relatively conventional: cloudwatch, data, events, iam, lambda, main, s3, sns, stepfunction,vars. The `terraform.tfstate` file is held in S3 to better enable remote coworking and to enable easy switching of the backend `terraform.tfstate` file.   
+Terraform deploys our infrastructure in AWS. This allows for scalable and granular control of infrastucture and easy co-operation between developers on the project. Terraform is also the basis of our CICD infrastructure. The file structure for our terraform directory is relatively conventional: 
+```
+terraform/
+├── cloudwatch.tf       # Logging & alarms
+├── data.tf              # IAM identity data
+├── events.tf            # Step function rules
+├── iam.tf               # Roles & policies & permissions
+├── lambda.tf            # Lambda functions and layers
+├── s3.tf                # Buckets
+├── sns.tf               # Topics & subscriptions
+├── stepfunctions.tf     # State machine for step function
+├── vars.tf              # Variables
+└── main.tf           # Backend & provider
+```
 
+The `terraform.tfstate` file is held in S3 to better enable remote coworking and to enable easy switching of the backend `terraform.tfstate` file.   
 
 Resources provisioned outside Terraform:
 - backend bucket:
@@ -98,7 +163,50 @@ Major packages include:
 - Pytest
 - Bandit
 - adbc
+- pg8000
+- sqlalchemy
 a full list of packages and dependencies can be found requirements.txt
+
+## Contribution
+To contribute to ainsdale-beach-etl, follow these steps:
+
+1. Fork this repository.
+2. Create a branch: git checkout -b <branch_name>.
+3. Make your changes and commit them: git commit -m '<commit_message>'
+4. Push to the original branch: git push origin <project_name>/<location>
+5. Create the pull request.
+
+## Contributors
+Thanks to the following people who have contributed to this project:
+- [@Seb-Allen](https://github.com/Seb-Allen) **Seb Allen**
+- [@ellweaver](https://github.com/ellweaver) **Ell Weaver**
+- [@didrudals112](https://github.com/didrudals112) **Kyungmin Yang**
+- [@dilesh-parmar](https://github.com/dilesh-parmar) **Dilesh Parmar**
+- [@JoshG585858](https://github.com/JoshG585858) **Josh Gilling**
+- [@jenia-solionii](https://github.com/jenia-solionii) **Jenia Solionii**
+
+## License
+This project uses the following license: [MIT](https://choosealicense.com/licenses/mit/).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
