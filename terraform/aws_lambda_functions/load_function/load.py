@@ -61,7 +61,7 @@ def load_data(
                 tail=transformed_shape-db__df_shape
             else: raise Exception(f"{table} not found")
         
-            if not test: 
+            if not test and tail > 0: 
                 transformed_df.tail(tail).write_database(table_name=table, connection=conn, if_table_exists= "append")
             logger.info(f"{table} successfully uploaded to data warehouse")
 
