@@ -63,7 +63,7 @@ or set the environment variables:
 Our initial data is stored in an RDS database, and contains 11 tables of normalised OLTP data. 
 Our extract function ingests and converts each table into `.csv` format using the polars library. Using boto3, each `.csv` file is uploaded to an S3 bucket with a key containing the ingestion timestamp and the original name of the table. This key convention enables simple versioning and reduces the chance of mishandling data. 
 
-Our key produces a psuedo file system based on year, month, day and a timestamp. The timestamp is then used as a batch id and each individual file is labelled with this id:
+Our key produces a pseudo file system based on year, month, day and a timestamp. The timestamp is then used as a batch id and each individual file is labelled with this id:
 ```python
 upload_file(
     s3_client,
