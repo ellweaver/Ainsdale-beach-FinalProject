@@ -3,7 +3,6 @@ import polars as pl
 import pandas as pd
 import logging
 from utils import download_file, get_db_secret
-import pg8000
 from io import BytesIO
 import psycopg2
 
