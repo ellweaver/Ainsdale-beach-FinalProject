@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "sns_extract_topic_policy" {
       variable = "AWS:SourceOwner"
 
       values = [
-        var.account_arn,
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/Ainsdale_beach",
       ]
     }
 

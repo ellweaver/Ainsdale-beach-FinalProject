@@ -1,9 +1,9 @@
-
+/*
 variable "account_arn" {
   type    = string
-  default = "arn:aws:iam::048204777974:user/Ainsdale_beach"
+  default = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/Ainsdale_beach"
 }
-
+*/
 variable "python_bucket_name" {
   type    = string
   default = "ainsdale-python-bucket-2"

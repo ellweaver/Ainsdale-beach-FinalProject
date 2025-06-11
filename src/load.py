@@ -59,14 +59,21 @@ def load_data(
                 s3_client, sourcebucket, f"{key}{batch_id}_{table}.parquet"
             )
             if file["code"]==200:
-                df = pd.read_parquet(file["body"])
+                transformed_df = pl.read_parquet(file["body"])
+                #print(transformed_df)
+                db_df = pl.read_database_uri("SELECT * FROM " + table, conn)
+                db__df_shape=db_df.shape[0]
+                transformed_shape=transformed_df.shape[0]
+                tail=db__df_shape-transformed_shape
+               
+                
 
             else: raise Exception(f"{table} not found")
                 
             
             
             if not test: 
-                df.write_database(table_name=table, connection=conn, if_table_exists= "append")
+                transformed_df.tail(tail).write_database(table_name=table, connection=conn, if_table_exists= "append")
             logger.info(f"{table} successfully uploaded to data warehouse")
 
         logger.info("All tables successfully uploaded to data warehouse")
@@ -76,8 +83,8 @@ def load_data(
         logger.error({"status": "Failure", "code": 404, "message": str(e)})
         return {"status": "Failure", "code": 404, "message": str(e)}
 
+
+if __name__ == "__main__":
+    print(lambda_handler({'status': 'Success', 'code': 200, 'key': 'data/2025/6/10/2025-06-10_11:49:15/', 'batch_id': '2025-06-10_11:49:15'},""))
+
     
-print(lambda_handler({'status': 'Success', 'code': 200, 'key': 'data/2025/6/10/2025-06-10_11:49:15/', 'batch_id': '2025-06-10_11:49:15'},""))
-
-
-     
