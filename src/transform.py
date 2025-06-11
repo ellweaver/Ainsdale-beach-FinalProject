@@ -1,11 +1,11 @@
 import boto3
 import logging
 from io import BytesIO
-from utils import upload_file, download_file
+from utils import upload_file, download_file, currency_code_converter
 import polars as pl
 import pyarrow as pa
 from datetime import date
-from utils import currency_code_converter
+
 
 
 def lambda_handler(event, context):
@@ -80,6 +80,7 @@ def transform_data(
             file = download_file(
                 s3_client, source_bucket, f"{key}{batch_id}_{table}.csv"
             )
+        
 
             df_dict[table] = pl.read_csv(file["body"], try_parse_dates=True)
         processed_dict["fact_sales_order"] = make_fact_sales_order(
@@ -179,6 +180,7 @@ def make_dim_date():
     )
 
     dim_date = dim_date.with_columns(
+        (pl.col("date_id").dt.date()).alias("date_id"),
         (pl.col("date_id").dt.year()).alias("year"),
         (pl.col("date_id").dt.month()).alias("month"),
         (pl.col("date_id").dt.day()).alias("day"),
@@ -187,7 +189,7 @@ def make_dim_date():
         (pl.col("date_id").dt.strftime("%B")).alias("month_name"),
         (pl.col("date_id").dt.quarter()).alias("quarter"),
     )
-
+    
     return dim_date
 
 

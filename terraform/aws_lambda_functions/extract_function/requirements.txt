@@ -1,0 +1,7 @@
+pyarrow
+connectorx
+polars
+boto3
+botocore
+logging
+

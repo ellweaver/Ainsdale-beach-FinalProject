@@ -1,3 +1,5 @@
+adbc-driver-manager==1.6.0
+adbc-driver-postgresql==1.6.0
 asn1crypto==1.5.1
 babel==2.17.0
 bandit==1.8.3
@@ -8,10 +10,14 @@ certifi==2025.4.26
 cffi==1.17.1
 charset-normalizer==3.4.2
 click==8.2.1
+connectorx==0.4.3
 coverage==7.8.2
 cryptography==45.0.3
+dotenv==0.9.9
 freezegun==1.5.2
+greenlet==3.2.3
 idna==3.10
+importlib_resources==6.5.2
 iniconfig==2.1.0
 Jinja2==3.1.6
 jmespath==1.0.1
@@ -30,6 +36,7 @@ pg8000==1.31.2
 platformdirs==4.3.8
 pluggy==1.6.0
 polars==1.30.0
+psycopg2-binary==2.9.10
 pyarrow==20.0.0
 pycparser==2.22
 Pygments==2.19.1
@@ -48,7 +55,9 @@ scramp==1.4.5
 setuptools==80.9.0
 simplejson==3.20.1
 six==1.17.0
+SQLAlchemy==2.0.41
 stevedore==5.4.1
+typing_extensions==4.14.0
 tzdata==2025.2
 urllib3==2.4.0
 Werkzeug==3.1.3
