@@ -4,6 +4,8 @@ import pandas as pd
 import logging
 from utils import download_file, get_db_secret
 import pg8000
+from io import BytesIO
+import psycopg2
 
 
 
@@ -56,17 +58,17 @@ def load_data(
 
     try:
         for table in processed_dict.keys():
-                print(table, "<<<<<<<")
                 file = download_file(
                     s3_client, sourcebucket, f"{key}{batch_id}_{table}.parquet"
                 )
                 if file["code"]==200:
-                    processed_dict[table] = pd.read_parquet(file["body"])
-
+                   
+                    processed_dict[table] = pl.read_parquet(file["body"].read())
+                    
                 else: raise Exception(f"{table} not found")
 
         for table, value in processed_dict.items():
-            value.to_sql(table, connection=conn, if_exists= "append")
+            value.write_database(table, connection=conn, if_table_exists= "append")
 
             logger.info(f"{table} successfully uploaded to data warehouse")
 
