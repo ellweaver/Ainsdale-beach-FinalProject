@@ -94,17 +94,22 @@ upload_file(
 ```
 
 
-## Load - Unfinished
-from bucket
-puts back into rds pg db
-what libraries were used?
+## Load
+Once our data has been transformed and uploaded to S3, the load function uses that data to maintain the data warehouse. The load function pulls an existing copy of the data warehouse into memory to compare it to data uploaded in S3 from the previous transform function. Any new data found in S3 is saved as `tail`, which is joined to the appropriate table in the data warehouse:
+
+```python
+    transformed_df = pl.read_parquet(file["body"]) # S3 data
+    db_df = pl.read_database_uri("SELECT * FROM " + table, conn) # data from warehouse  
+    db_df_shape = db_df.shape[0] # row count of warehouse table
+    transformed_shape = transformed_df.shape[0] # row count table in S3
+    tail = transformed_shape - db_df_shape # the difference between S3 and the warehouse
+```
 
 ## Data Visualisation - Unfinished
 read db
 Implementation using locker
 pull some analysis
 - could perhaps use matplotlib
-
 
 ## Hosting
 Our infrastructure has been provisioned in AWS, employing the following services: 
