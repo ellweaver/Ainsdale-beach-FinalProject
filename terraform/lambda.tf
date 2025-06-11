@@ -77,7 +77,7 @@ resource "aws_lambda_function" "extract_lambda" {
   role          = aws_iam_role.lambda_role.arn
   image_uri= "${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-2.amazonaws.com/extract_func:0.0.1"
   package_type = "Image"
-
+  memory_size = 3000
  
 
   timeout = 60
@@ -101,7 +101,7 @@ resource "aws_lambda_function" "transform_lambda" {
     aws_lambda_layer_version.python_polars_layer.arn,
     aws_lambda_layer_version.pyarrow_layer.arn,
   ]
-
+  memory_size = 3000
   timeout = 60
   publish = true
 
@@ -115,8 +115,8 @@ resource "aws_lambda_function" "load_lambda" {
   package_type = "Image"
 
   
-
-  timeout = 899
+  memory_size = 3000
+  timeout = 60
   publish = true
 
 }
