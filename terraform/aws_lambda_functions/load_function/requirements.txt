@@ -1,0 +1,9 @@
+pyarrow
+polars
+boto3
+botocore
+logging
+pandas
+psy
+psycopg2-binary
+SQLAlchemy
