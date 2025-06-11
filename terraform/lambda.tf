@@ -144,12 +144,12 @@ resource "aws_lambda_function" "transform_lambda" {
 resource "aws_lambda_function" "load_lambda" {
   function_name = "load_lambda_function"
   role          = aws_iam_role.lambda_role.arn
-  image_uri= "${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-2.amazonaws.com/load_func:0.0.1"
+  image_uri= "${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-2.amazonaws.com/load_func:0.0.2"
   package_type = "Image"
 
   
 
-  timeout = 60
+  timeout = 899
   publish = true
 
 }

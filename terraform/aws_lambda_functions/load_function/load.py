@@ -58,7 +58,7 @@ def load_data(
                 db_df = pl.read_database_uri("SELECT * FROM " + table, conn)
                 db__df_shape=db_df.shape[0]
                 transformed_shape=transformed_df.shape[0]
-                tail=db__df_shape-transformed_shape
+                tail=transformed_shape-db__df_shape
             else: raise Exception(f"{table} not found")
         
             if not test: 
@@ -71,3 +71,4 @@ def load_data(
     except Exception as e:
         logger.error({"status": "Failure", "code": 404, "message": str(e)})
         return {"status": "Failure", "code": 404, "message": str(e)}
+

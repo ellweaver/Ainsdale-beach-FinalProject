@@ -7,3 +7,4 @@ pandas
 psy
 psycopg2-binary
 SQLAlchemy
+connectorx
