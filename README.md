@@ -1,6 +1,6 @@
 # Ainsdale-Beach-ETL
 [![Python Version](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
-[![Code Coverage](https://img.shields.io/badge/coverage-99%-green.svg)]
+[![Code Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen.svg)]
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 ## Summary
@@ -101,15 +101,17 @@ Once our data has been transformed and uploaded to S3, the load function uses th
     transformed_df = pl.read_parquet(file["body"]) # S3 data
     db_df = pl.read_database_uri("SELECT * FROM " + table, conn) # data from warehouse  
     db_df_shape = db_df.shape[0] # row count of warehouse table
-    transformed_shape = transformed_df.shape[0] # row count table in S3
+    transformed_shape = transformed_df.shape[0] # row count of table in S3
     tail = transformed_shape - db_df_shape # the difference between S3 and the warehouse
 ```
 
-## Data Visualisation - Unfinished
-read db
-Implementation using locker
-pull some analysis
-- could perhaps use matplotlib
+## Data Visualisation
+With our data warehouse now populated, we connected Google Looker to perform preliminary data visualisation. We created a data set based on fact_sales_order, with ajoining dim tables, to generate a visualisation of typical key queries. Some of those queries included:
+- total units sold since records began
+- units sold on a monthly basis, per year
+- distribution of currencies used by customers
+- units sold of each design
+- deliveries per country
 
 ## Hosting
 Our infrastructure has been provisioned in AWS, employing the following services: 
