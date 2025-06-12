@@ -106,7 +106,7 @@ Once our data has been transformed and uploaded to S3, the load function uses th
 ```
 
 ## Data Visualisation
-With our data warehouse now populated, we connected Google Looker to perform preliminary data visualisation. We created a data set based on fact_sales_order, with ajoining dim tables, to generate a visualisation of typical key queries. Some of those queries included:
+With our data warehouse now populated, we connected Google Looker to perform preliminary data visualisation. We created a data set based on fact_sales_order, with adjoining dim tables, to generate a visualisation of typical key queries. Some of those queries included:
 - total units sold since records began
 - units sold on a monthly basis, per year
 - distribution of currencies used by customers
