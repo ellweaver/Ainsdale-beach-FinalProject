@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_event_rule" "ainsdale_state_machine_schedule" {
-  name                = "run-step-func-every-10-mins"
-  schedule_expression = "rate(10 minutes)"
-  description         = "Scheduler for running the extract lamdba function every ten minutes"
+  name                = "run-step-func-every-15-mins"
+  schedule_expression = "rate(15 minutes)"
+  description         = "Scheduler for running the extract lamdba function every fifteen minutes"
 }
 
 resource "aws_cloudwatch_event_target" "ainsdale_etl_stepfunction" {

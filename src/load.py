@@ -1,15 +1,7 @@
 import boto3
 import polars as pl
-import pandas as pd
 import logging
 from utils import download_file, get_db_secret
-from io import BytesIO
-import psycopg2
-
-
-
-
-
 
 def lambda_handler(event, context):
     s3_client = boto3.client("s3")
@@ -66,15 +58,10 @@ def load_data(
                 db_df = pl.read_database_uri("SELECT * FROM " + table, conn)
                 db__df_shape=db_df.shape[0]
                 transformed_shape=transformed_df.shape[0]
-                tail=db__df_shape-transformed_shape
-               
-                
-
+                tail=transformed_shape-db__df_shape
             else: raise Exception(f"{table} not found")
-                
-            
-            
-            if not test: 
+        
+            if not test and tail > 0: 
                 transformed_df.tail(tail).write_database(table_name=table, connection=conn, if_table_exists= "append")
             logger.info(f"{table} successfully uploaded to data warehouse")
 
@@ -85,8 +72,3 @@ def load_data(
         logger.error({"status": "Failure", "code": 404, "message": str(e)})
         return {"status": "Failure", "code": 404, "message": str(e)}
 
-
-if __name__ == "__main__":
-    print(lambda_handler({'status': 'Success', 'code': 200, 'key': 'data/2025/6/10/2025-06-10_11:49:15/', 'batch_id': '2025-06-10_11:49:15'},""))
-
-    

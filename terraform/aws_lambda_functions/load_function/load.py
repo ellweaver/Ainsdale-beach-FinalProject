@@ -58,10 +58,10 @@ def load_data(
                 db_df = pl.read_database_uri("SELECT * FROM " + table, conn)
                 db__df_shape=db_df.shape[0]
                 transformed_shape=transformed_df.shape[0]
-                tail=db__df_shape-transformed_shape
+                tail=transformed_shape-db__df_shape
             else: raise Exception(f"{table} not found")
         
-            if not test: 
+            if not test and tail > 0: 
                 transformed_df.tail(tail).write_database(table_name=table, connection=conn, if_table_exists= "append")
             logger.info(f"{table} successfully uploaded to data warehouse")
 
@@ -71,3 +71,4 @@ def load_data(
     except Exception as e:
         logger.error({"status": "Failure", "code": 404, "message": str(e)})
         return {"status": "Failure", "code": 404, "message": str(e)}
+
