@@ -1,6 +1,6 @@
 # Ainsdale-Beach-ETL
 [![Python Version](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
-[![Code Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen.svg)]
+[![Code Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen.svg)]()
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 ## Summary
@@ -12,15 +12,15 @@ Our aim with this project is to enable analysis of important business data witho
 
 ## Prerequisites
 Before you begin, ensure you have met the following requirements:
-```
-**Python** V3.13
 
-**Terraform** V1.5
+- **Python** V3.13
 
-**Git** for version control
+- **Terraform** V1.5
 
-**AWS CLI** (optional but recommended)
-```
+- **Git** for version control
+
+- **AWS CLI** (optional but recommended)
+
 
 ## Development setup
 1. Clone the repository:
@@ -98,11 +98,11 @@ upload_file(
 Once our data has been transformed and uploaded to S3, the load function uses that data to maintain the data warehouse. The load function pulls an existing copy of the data warehouse into memory to compare it to data uploaded in S3 from the previous transform function. Any new data found in S3 is saved as `tail`, which is joined to the appropriate table in the data warehouse:
 
 ```python
-    transformed_df = pl.read_parquet(file["body"]) # S3 data
+    transformed_df = pl.read_parquet(file["body"])               # S3 data
     db_df = pl.read_database_uri("SELECT * FROM " + table, conn) # data from warehouse  
-    db_df_shape = db_df.shape[0] # row count of warehouse table
-    transformed_shape = transformed_df.shape[0] # row count of table in S3
-    tail = transformed_shape - db_df_shape # the difference between S3 and the warehouse
+    db_df_shape = db_df.shape[0]                                 # row count of warehouse table
+    transformed_shape = transformed_df.shape[0]                  # row count of table in S3
+    tail = transformed_shape - db_df_shape                       # the difference between S3 and the warehouse
 ```
 
 ## Data Visualisation
@@ -134,7 +134,7 @@ Our project employs GitHub actions to adhere to CICD principles (Continuous Inte
 Terraform deploys our infrastructure in AWS. This allows for scalable and granular control of infrastucture and easy co-operation between developers on the project. Terraform is also the basis of our CICD infrastructure. The file structure for our terraform directory is relatively conventional: 
 ```
 terraform/
-├── cloudwatch.tf       # Logging & alarms
+├── cloudwatch.tf        # Logging & alarms
 ├── data.tf              # IAM identity data
 ├── events.tf            # Step function rules
 ├── iam.tf               # Roles & policies & permissions
@@ -143,7 +143,7 @@ terraform/
 ├── sns.tf               # Topics & subscriptions
 ├── stepfunctions.tf     # State machine for step function
 ├── vars.tf              # Variables
-└── main.tf           # Backend & provider
+└── main.tf              # Backend & provider
 ```
 
 The `terraform.tfstate` file is held in S3 to better enable remote coworking and to enable easy switching of the backend `terraform.tfstate` file.   
@@ -194,40 +194,4 @@ Thanks to the following people who have contributed to this project:
 
 ## License
 This project uses the following license: [MIT](https://choosealicense.com/licenses/mit/).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
