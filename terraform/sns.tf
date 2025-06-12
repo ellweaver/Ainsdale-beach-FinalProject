@@ -42,19 +42,6 @@ resource "aws_sns_topic_subscription" "email" {
   endpoint  = var.email_address
 }
 
-#resource "aws_sns_topic_policy" "sns_extract_policy" {
-#arn = aws_sns_topic.sns_extract.arn
-#
-#policy = data.aws_iam_policy_document.sns_extract_topic_policy.json
-#}
-
-#output "sns_topic_arn" {
-#value = "${aws_sns_topic.sns_extract.arn}"
-#}
-
-#output "sns_subscription_arn" {
-# value = "${aws_sns_topic_subscription.email.arn}"
-#}
 
 data "aws_iam_policy_document" "sns_extract_topic_policy" {
   policy_id = "__default_policy_ID"

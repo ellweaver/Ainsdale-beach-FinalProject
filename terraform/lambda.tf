@@ -56,21 +56,7 @@ resource "aws_lambda_layer_version" "pyarrow_layer" {
   layer_name = "python_pyarrow"
 
 }
-/*
-resource "aws_lambda_layer_version" "connector_x_layer" {
-  s3_bucket  = "ainsdale-layers-files"
-  s3_key     = "conn_x_layer.zip"
-  layer_name = "python_connector_x"
 
-}
-
-resource "aws_lambda_layer_version" "adbc_layer" {
-  s3_bucket  = "ainsdale-layers-files"
-  s3_key     = "adbc_layer.zip"
-  layer_name = "adbc_layer"
-
-}
-*/
 
 resource "aws_lambda_function" "extract_lambda" {
   function_name = "extract_lambda_function"
