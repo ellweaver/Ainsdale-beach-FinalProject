@@ -10,9 +10,9 @@ resource "aws_sfn_state_machine" "ainsdale_beach_etl_state_machine" {
   definition = <<EOF
 {
   "Comment": "A description of my state machine",
-  "StartAt": "extract Lambda invokation",
+  "StartAt": "extract Lambda invocation",
   "States": {
-    "extract Lambda invokation": {
+    "extract Lambda invocation": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
@@ -34,9 +34,9 @@ resource "aws_sfn_state_machine" "ainsdale_beach_etl_state_machine" {
           "JitterStrategy": "FULL"
         }
       ],
-      "Next": "Transform Lambda Invoke"
+      "Next": "Transform Lambda Invocation"
     },
-    "Transform Lambda Invoke": {
+    "Transform Lambda Invocation": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
@@ -58,9 +58,9 @@ resource "aws_sfn_state_machine" "ainsdale_beach_etl_state_machine" {
           "JitterStrategy": "FULL"
         }
       ],
-      "Next": "Load Lambda Invoke"
+      "Next": "Load Lambda Invocation"
     },
-    "Load Lambda Invoke": {
+    "Load Lambda Invocation": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
