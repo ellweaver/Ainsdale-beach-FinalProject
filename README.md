@@ -195,39 +195,3 @@ Thanks to the following people who have contributed to this project:
 ## License
 This project uses the following license: [MIT](https://choosealicense.com/licenses/mit/).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
